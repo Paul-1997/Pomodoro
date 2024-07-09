@@ -1,0 +1,37 @@
+番茄钟功能架构图
+
+LandingPage.vue
+    ├── 快速建立按钮 (QuickStart.vue)
+    ├── 选择任务按钮 (TaskManager.vue)
+          └── 没有任务数据 (AddTask.vue)
+
+QuickStart.vue
+    ├── 显示常规番茄钟设置
+    └── 开始按钮
+
+TaskManager.vue
+    ├── 显示任务列表
+    ├── 选择任务功能
+    ├── 添加任务按钮 (AddTask.vue)
+
+AddTask.vue
+    ├── 任务名称输入框
+    ├── 添加任务按钮
+
+PomodoroTimer.vue (计时器组件)
+    ├── 显示当前阶段 (工作、短休息、长休息)
+    ├── 开始、暂停、重置按钮
+    ├── 计时功能
+
+Statistics.vue (统计数据组件)
+    ├── 显示累计工作时间
+    ├── 完成的任务数量
+    ├── 其他统计数据
+
+Settings.vue (可选)
+    ├── 自定义工作时间
+    ├── 自定义休息时间
+
+辅助组件:
+    ├── Header.vue (头部导航)
+    ├── Footer.vue (底部信息)
