@@ -1,15 +1,31 @@
-/* eslint-env node */
-require('@rushstack/eslint-patch/modern-module-resolution')
+import { rule } from 'postcss/lib/postcss';
 
 module.exports = {
   root: true,
-  'extends': [
+  extends: [
     'plugin:vue/vue3-essential',
     'eslint:recommended',
     '@vue/eslint-config-typescript',
-    '@vue/eslint-config-prettier/skip-formatting'
+    '@vue/eslint-config-prettier/skip-formatting',
+    'airbnb-base',
   ],
+  settings: {
+    'import/resolver': {
+      alias: {
+        map: [['@', './src']],
+        extensions: ['.js', '.vue'],
+      },
+    },
+    'import/core-modules': ['vite', '@vitejs/plugin-vue'],
+  },
   parserOptions: {
-    ecmaVersion: 'latest'
-  }
-}
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+  },
+  plugins: ['vue'],
+  rules: {
+    'no-plusplus': 'off',
+    'no-return-assign' : 'off',
+    'max-len': ['error', 150],
+  },
+};
