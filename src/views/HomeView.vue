@@ -1,3 +1,9 @@
 <template>
-  <h1>這是首頁</h1>
+  <Pomodoro />
+  <Footer />
 </template>
+
+<script setup>
+import Pomodoro from '../components/PomodoroComp.vue'
+import Footer from '../components/FooterComp.vue'
+</script>

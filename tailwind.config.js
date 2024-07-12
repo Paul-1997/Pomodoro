@@ -1,5 +1,9 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{vue,js,ts,jsx,tsx}",
+  ],
   theme: {
     extend: {
       fontSize: {
@@ -36,7 +40,7 @@ module.exports = {
     },
   },
   plugins: [
-    require('@tailwindcss/aspect-ratio'), // 需要安装 @tailwindcss/aspect-ratio 插件
+    require('@tailwindcss/aspect-ratio'),
   ],
 };
 
