@@ -9,11 +9,11 @@
             </RouterLink>
           </li>
           <li>
-            <button type="button" @click="openSettings">
+            <button type="button" @click="openDialog('settings')">
               <span class="material-symbols-outlined icon-fill">
                 settings
               </span>
-            </button>
+            </button> c
           </li>
           <li>
             <RouterLink to="">
@@ -24,7 +24,7 @@
           </li>
           <li>
             <RouterLink to="">
-              <span class="material-symbols-outlined">
+              <span class="material-symbols-outlined" @click="openDialog('manual')">
                 help
               </span>
             </RouterLink>
@@ -67,6 +67,7 @@ const timerStatus = ref<TimerStatus>('stopped');
 //timer 
 let timer: any;
 //data
+const openDialog = (target: string) => console.log(123456)
 const Setting = {
   timer: {
     'work': 25,
