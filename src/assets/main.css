@@ -13,3 +13,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .input-field{
+    @apply py-2 indent-3 rounded bg-gray-100 outline-slate-200
+  }
+  .btn {
+    @apply inline-block px-3 py-2 rounded-md text-white transition duration-300;
+  }
+  .btn-lg {
+    @apply px-5 py-3
+  }
+  .btn-toggle {
+    @apply relative w-14 h-7 bg-gray-200 rounded-full dark:bg-gray-700 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-focus:ring-4 peer-checked:bg-green-600 ;
+    &::after {
+      content: "";
+      @apply absolute top-0.5 start-1 size-6 transition-all rounded-full bg-white border border-gray-300 peer-checked:border-white peer-checked:translate-x-full rtl:peer-checked:-translate-x-full; 
+    }
+  }
+}
+/*  peer after:top-0.5 after:start-[2px] */

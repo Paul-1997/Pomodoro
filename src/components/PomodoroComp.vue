@@ -13,7 +13,8 @@
               <span class="material-symbols-outlined icon-fill">
                 settings
               </span>
-            </button> c
+            </button>
+
           </li>
           <li>
             <RouterLink to="">
@@ -54,20 +55,26 @@
       </div>
     </div>
   </main>
+
+  <Dialog v-model:isShow="showModal" />
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import Dialog from './dialog/SettingDialog.vue'
 
 import type { WorkStatus, TimerStatus, Task, Pomodoro } from '@/interface/pomodoro';
 
 //status
+const showModal = ref(false);
 const workStatus = ref<WorkStatus>('work');
 const timerStatus = ref<TimerStatus>('stopped');
 //timer 
 let timer: any;
 //data
-const openDialog = (target: string) => console.log(123456)
+const openDialog = (target: string) => {
+  if (target === 'settings') showModal.value = true
+}
 const Setting = {
   timer: {
     'work': 25,
