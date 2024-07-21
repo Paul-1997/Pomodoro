@@ -3,11 +3,11 @@ import { rule } from 'postcss/lib/postcss';
 module.exports = {
   root: true,
   extends: [
+    'airbnb-base',
     'plugin:vue/vue3-essential',
     'eslint:recommended',
     '@vue/eslint-config-typescript',
     '@vue/eslint-config-prettier/skip-formatting',
-    'airbnb-base',
   ],
   settings: {
     'import/resolver': {
@@ -18,7 +18,7 @@ module.exports = {
     },
     'import/core-modules': ['vite', '@vitejs/plugin-vue'],
   },
-  parserOptions: {
+  parserOptions: {  
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
