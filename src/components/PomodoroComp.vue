@@ -56,42 +56,40 @@
     </div>
   </main>
 
-  <Dialog v-model:isShow="showModal" />
+  <Setting v-model:isShow="showModal" v-if="currModal === 'settings'" />
+  <Manual v-model:isShow="showModal" v-if="currModal === 'manual'" />
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import Dialog from './dialog/SettingDialog.vue'
-
+import Setting from './dialog/SettingDialog.vue';
+import Manual from './dialog/ManualDialog.vue';
+import { useSettingsStore } from '@/stores/setting';
 import type { WorkStatus, TimerStatus, Task, Pomodoro } from '@/interface/pomodoro';
 
+const { settingConfig } = useSettingsStore();
 //status
+const currModal = ref('');
 const showModal = ref(false);
-const workStatus = ref<WorkStatus>('work');
+const workStatus = ref<WorkStatus>('pomodoroTime');
 const timerStatus = ref<TimerStatus>('stopped');
 //timer 
-let timer: any;
+let timer: number;
 //data
 const openDialog = (target: string) => {
-  if (target === 'settings') showModal.value = true
+  currModal.value = target;
+  showModal.value = true
 }
-const Setting = {
-  timer: {
-    'work': 25,
-    'short break': 5,
-    'long break': 15,
-  },
-}
-const pomodoro_data: Pomodoro = {
-  remainingTime: Setting.timer.work * 60,
+//pomodoro
+const pomodoro = ref<Pomodoro>({
+  remainingTime: settingConfig.timer[workStatus.value] * 60,
   currentTask: {
     id: '1',
     content: '',
     totalPomodoros: 0,
     completedPomodoros: 0
   }
-}
-const pomodoro = ref(pomodoro_data);
+});
 
 const getFormatRemainTime = computed((): string => {
   const time = pomodoro.value.remainingTime;
@@ -105,26 +103,22 @@ const toggleTimer = (): void => {
   timerStatus.value === 'running' ? runTimer() : stopTimer()
 }
 
-const runTimer = () => {
-  timer = setInterval(() => {
-    console.log(pomodoro.value.remainingTime--);
-  }, 1000)
-}
+const runTimer = () => timer = setInterval(() => pomodoro.value.remainingTime--, 1000);
 const stopTimer = () => clearInterval(timer);
 // skip/complete task
 const skipTimer = (): void => {
   //停止計時器
   stopTimer()
   //完成pomodoro
-  if (workStatus.value === 'work') {
+  if (workStatus.value === 'pomodoroTime') {
     pomodoro.value.currentTask.completedPomodoros++;
-    workStatus.value = 'work'
+    workStatus.value = 'pomodoroTime'
   }
   else {
-    workStatus.value = pomodoro.value.currentTask.completedPomodoros % 4 ? 'short break' : 'long break'
+    workStatus.value = pomodoro.value.currentTask.completedPomodoros % 4 ? 'shortBreak' : 'longBreak'
   }
   timerStatus.value = 'stopped';
-  pomodoro.value.remainingTime = Setting.timer[workStatus.value] * 60;
+  pomodoro.value.remainingTime = settingConfig.timer[workStatus.value] * 60;
 }
 
 </script>

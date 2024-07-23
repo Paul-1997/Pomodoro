@@ -2,7 +2,7 @@
   <div
     class="fixed inset-0  py-20 w-screen bg-black/60 z-[100] flex items-center justify-center overflow-y-scroll overflow-x-hidden"
     aria-hidden="true" role="dialog" @click.self="closeModal" v-if="props.isShow">
-    <div class="dialog bg-white *:p-4 rounded-xl shadow-xl mt-[1000px]">
+    <div class="dialog bg-white *:p-4 rounded-xl shadow-xl mt-[900px]">
       <div class="border-b border-gray-200 relative">
         <h3 class="text-4xl font-semibold text-center">設定</h3>
         <button @click="closeModal"
@@ -224,7 +224,7 @@ import { timezones, dateFormatType } from '@/assets/timeZone';
 import { formatZone } from '@/helper/timeZone';
 import type { DialogProps } from '@/interface/dialog';
 //init
-const { settingConfig, updateConfig } = useSettingsStore();
+const { settingConfig } = useSettingsStore();
 //sound
 const AlarmList = ref<string[]>(['Dingdong', 'Bird', 'Cuckoo', 'Dingdingding', 'Happy jingle', 'Pikachu']);
 const TickList = ref<string[]>(['Ticking1', 'Ticking2']);
@@ -250,9 +250,3 @@ const emit = defineEmits(['update:isShow']);
 
 const closeModal = () => emit('update:isShow', false);
 </script>
-
-<style scoped>
-.dialog {
-  width: min(664px, calc(100vw - 24px));
-}
-</style>

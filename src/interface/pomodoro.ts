@@ -1,5 +1,5 @@
 
-export type WorkStatus = "work" | "short break" | "long break";
+export type WorkStatus = "pomodoroTime" | "shortBreak" | "longBreak";
 
 export type TimerStatus = "running" | "paused" | "stopped";
 
