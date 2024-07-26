@@ -13,6 +13,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    @apply appearance-none;
+  }
+}
 @layer components {
   .input-field{
     @apply py-2 indent-3 rounded bg-gray-100 outline-slate-200

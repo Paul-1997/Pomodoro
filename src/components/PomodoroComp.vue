@@ -1,6 +1,6 @@
 <template>
   <main class="bg-[#CD5C5C] min-h-dvh py-8">
-    <div class="pomodoro mx-auto px-4">
+    <div class="mx-auto px-4">
       <nav class="py-6 mb-10">
         <ul class="flex justify-center items-center gap-x-8">
           <li>
@@ -10,48 +10,54 @@
           </li>
           <li>
             <button type="button" @click="openDialog('settings')">
-              <span class="material-symbols-outlined icon-fill">
+              <span class="material-symbols-outlined icon-fill text-white">
                 settings
+              </span>
+            </button>
+          </li>
+          <li>
+            <button type="button" @click="openDialog('status')">
+              <span class="material-symbols-outlined text-white">
+                analytics
+              </span>
+            </button>
+          </li>
+          <li>
+            <button type="button" @click="openDialog('manual')">
+              <span class="material-symbols-outlined text-white">
+                help
               </span>
             </button>
 
           </li>
-          <li>
-            <RouterLink to="">
-              <span class="material-symbols-outlined">
-                analytics
-              </span>
-            </RouterLink>
-          </li>
-          <li>
-            <RouterLink to="">
-              <span class="material-symbols-outlined" @click="openDialog('manual')">
-                help
-              </span>
-            </RouterLink>
-          </li>
         </ul>
       </nav>
-      <div class="w-fit mb-8 mx-auto py-3 px-10 rounded-lg bg-black bg-opacity-25 text-gray-200 text-3xl">
-        {{ workStatus }}
-      </div>
-      <div class="pomodoro__timer relative mx-auto rounded-full bg-white size-[300px] mb-10">
-        <div class="size-[260px] rounded-full bg-red-400 absolute inset-5 grid place-content-center">
-          <span class="text-7xl">{{ getFormatRemainTime }}</span>
+
+      <div class="grid lg:grid-cols-2 justify-center gap-8">
+        <div class="pomodoro mx-auto">
+          <div class="w-fit mb-8 mx-auto py-3 px-10 rounded-lg bg-black bg-opacity-25 text-gray-200 text-3xl">
+            {{ workStatus }}
+          </div>
+          <div class="pomodoro__timer relative mx-auto rounded-full bg-white size-[300px] mb-10">
+            <div class="size-[260px] rounded-full bg-red-400 absolute inset-5 grid place-content-center">
+              <span class="text-7xl">{{ getFormatRemainTime }}</span>
+            </div>
+          </div>
+          <div class="pomodoro__buttons w-fit mx-auto">
+            <button type="button" class="py-2 px-4 min-w-40 rounded-lg bg-gray-100" @click="toggleTimer"
+              v-if="timerStatus !== 'running'">Start</button>
+            <div v-else>
+              <span class="material-symbols-outlined icon-fill text-gray-100 text-5xl leading-none me-4"
+                @click="toggleTimer">
+                pause
+              </span>
+              <span class="material-symbols-outlined icon-fill text-gray-100 text-5xl leading-none " @click="skipTimer">
+                skip_next
+              </span>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="pomodoro__buttons w-fit mx-auto">
-        <button type="button" class="py-2 px-4 min-w-40 rounded-lg bg-gray-100" @click="toggleTimer"
-          v-if="timerStatus !== 'running'">Start</button>
-        <div v-else>
-          <span class="material-symbols-outlined icon-fill text-gray-100 text-5xl leading-none me-4"
-            @click="toggleTimer">
-            pause
-          </span>
-          <span class="material-symbols-outlined icon-fill text-gray-100 text-5xl leading-none " @click="skipTimer">
-            skip_next
-          </span>
-        </div>
+        <TaskComp></TaskComp>
       </div>
     </div>
   </main>
@@ -62,6 +68,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import TaskComp from '@/components/TaskComp.vue'
 import Setting from './dialog/SettingDialog.vue';
 import Manual from './dialog/ManualDialog.vue';
 import { useSettingsStore } from '@/stores/setting';
