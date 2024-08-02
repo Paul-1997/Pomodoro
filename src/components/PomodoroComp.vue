@@ -33,10 +33,11 @@
         </ul>
       </nav>
 
+      {{ useTask.currTaskCompletedPomodoro }}
       <div class="grid lg:grid-cols-2 justify-center gap-8">
         <div class="pomodoro mx-auto">
           <div class="w-fit mb-8 mx-auto py-3 px-10 rounded-lg bg-black bg-opacity-25 text-gray-200 text-3xl">
-            {{ workStatus }}
+            {{ pomodoro.workStatus === 'pomodoroTime' ? 'work' : pomodoro.workStatus }}
           </div>
           <div class="pomodoro__timer relative mx-auto rounded-full bg-white size-[300px] mb-10">
             <div class="size-[260px] rounded-full bg-red-400 absolute inset-5 grid place-content-center">
@@ -45,13 +46,14 @@
           </div>
           <div class="pomodoro__buttons w-fit mx-auto">
             <button type="button" class="py-2 px-4 min-w-40 rounded-lg bg-gray-100" @click="toggleTimer"
-              v-if="timerStatus !== 'running'">Start</button>
-            <div v-else>
+              v-if="pomodoro.timerStatus !== 'running'">Start</button>
+            <div v-else class="*:cursor-pointer">
               <span class="material-symbols-outlined icon-fill text-gray-100 text-5xl leading-none me-4"
                 @click="toggleTimer">
                 pause
               </span>
-              <span class="material-symbols-outlined icon-fill text-gray-100 text-5xl leading-none " @click="skipTimer">
+              <span class="material-symbols-outlined icon-fill text-gray-100 text-5xl leading-none "
+                @click="finishTimer()">
                 skip_next
               </span>
             </div>
@@ -67,21 +69,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import TaskComp from '@/components/TaskComp.vue'
+import { ref, computed, watch } from 'vue';
 import Setting from './dialog/SettingDialog.vue';
 import Manual from './dialog/ManualDialog.vue';
+import TaskComp from '@/components/TaskComp.vue'
 import { useSettingsStore } from '@/stores/setting';
-import type { WorkStatus, TimerStatus, Task, Pomodoro } from '@/interface/pomodoro';
+import { useTaskStore } from '@/stores/task';
+import type { Pomodoro } from '@/interface/pomodoro';
+import useAudio from '@/composable/useAudio';
 
 const { settingConfig } = useSettingsStore();
+const useTask = useTaskStore();
 //status
 const currModal = ref('');
 const showModal = ref(false);
-const workStatus = ref<WorkStatus>('pomodoroTime');
-const timerStatus = ref<TimerStatus>('stopped');
 //timer 
-let timer: number;
+let timer: number | NodeJS.Timeout;
 //data
 const openDialog = (target: string) => {
   currModal.value = target;
@@ -89,13 +92,9 @@ const openDialog = (target: string) => {
 }
 //pomodoro
 const pomodoro = ref<Pomodoro>({
-  remainingTime: settingConfig.timer[workStatus.value] * 60,
-  currentTask: {
-    id: '1',
-    content: '',
-    totalPomodoros: 0,
-    completedPomodoros: 0
-  }
+  remainingTime: settingConfig.timer.pomodoroTime - 20,
+  workStatus: 'pomodoroTime',
+  timerStatus: 'stopped'
 });
 
 const getFormatRemainTime = computed((): string => {
@@ -106,27 +105,50 @@ const getFormatRemainTime = computed((): string => {
 });
 //active/pause timer
 const toggleTimer = (): void => {
-  timerStatus.value = timerStatus.value !== 'running' ? 'running' : 'paused'
-  timerStatus.value === 'running' ? runTimer() : stopTimer()
+  pomodoro.value.timerStatus = pomodoro.value.timerStatus !== 'running' ? 'running' : 'paused'
+  pomodoro.value.timerStatus === 'running' ? runTimer() : stopTimer()
 }
-
 const runTimer = () => timer = setInterval(() => pomodoro.value.remainingTime--, 1000);
 const stopTimer = () => clearInterval(timer);
-// skip/complete task
-const skipTimer = (): void => {
-  //停止計時器
-  stopTimer()
-  //完成pomodoro
-  if (workStatus.value === 'pomodoroTime') {
-    pomodoro.value.currentTask.completedPomodoros++;
-    workStatus.value = 'pomodoroTime'
+//timer logic
+const finishTimer = (isSkip: boolean = false) => {
+  stopTimer();
+  pomodoro.value.timerStatus = 'stopped';
+
+  if (pomodoro.value.workStatus === 'pomodoroTime') {
+    useTask.completePomodoro();
+    const status = useTask.currTaskCompletedPomodoro % settingConfig.timer.longBreakInterval ? 'shortBreak' : 'longBreak';
+    pomodoro.value.workStatus = status;
   }
   else {
-    workStatus.value = pomodoro.value.currentTask.completedPomodoros % 4 ? 'shortBreak' : 'longBreak'
+    pomodoro.value.workStatus = 'pomodoroTime';
   }
-  timerStatus.value = 'stopped';
-  pomodoro.value.remainingTime = settingConfig.timer[workStatus.value] * 60;
+  //reset time
+  pomodoro.value.remainingTime = settingConfig.timer[pomodoro.value.workStatus] * 60;
+  //autoStart
+  if (!isSkip) {
+    if (settingConfig.timer.enable_autoStartBreak && pomodoro.value.workStatus !== 'pomodoroTime') {
+      pomodoro.value.timerStatus = 'running';
+      runTimer();
+    }
+    else if (settingConfig.timer.enable_autoStartPomodoro && pomodoro.value.workStatus === 'pomodoroTime') {
+      pomodoro.value.timerStatus = 'running';
+      runTimer();;
+    }
+  }
 }
+//audio
+const audio: HTMLAudioElement = new Audio();
+const playAudio = (type: string) => useAudio(type, audio);
+
+watch(() => pomodoro.value, () => {
+  if (pomodoro.value.timerStatus !== 'running') stopTimer();
+  if (pomodoro.value.remainingTime < 1) {
+    playAudio('alarm');
+    finishTimer();
+  }
+}, { deep: true })
+
 
 </script>
 <style scoped>

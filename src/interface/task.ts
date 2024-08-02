@@ -1,18 +1,26 @@
-interface Task {
+/*
+if autocomplete 則 當前番茄到達預設番茄 及勾選完成
+*/
+export interface Task {
   title: string,
   id: string,
   totalPomodoro: number,
-  note?: string,
-  plans?: Array<Plan>
+  notes?: string,
+  plans?: Array<Plan> | [],
+  isCompleted?: boolean,
+  isOpen?: boolean
 }
 
-interface Plan {
+export interface Plan {
   content : string,
-  pomodoro: number
+  id:string,
+  pomodoro: number,
+  completedPomodoro?: number
+  isCheck?: boolean,
 }
 
 //for timer
-interface currTask extends Task {
-  completedPomodoro : number,
-  currPlan : string,
+export interface currTask extends Task {
+  currTotalPomodoro: number,
+  currPlan : Plan,
 }

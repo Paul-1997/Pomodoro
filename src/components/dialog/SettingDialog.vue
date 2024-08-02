@@ -161,6 +161,7 @@
             </span>
             Sounds
           </h3>
+          <audio ref="audio"></audio>
           <ul class="px-2 md:px-4 *:mb-8">
             <li class="flex items-center justify-between">
               <p>Enable Alarm Sound</p>
@@ -197,7 +198,7 @@
               <li class="flex items-center justify-between">
                 <p>Tick Sound</p>
                 <select name="audioPlayer" class="input-field w-full max-w-48"
-                  v-model="settingConfig.sound.tickFileName" @change="playAudio('ticking')">
+                  v-model="settingConfig.sound.tickFileName" @change="playAudio('tick')">
                   <option :value="audio" v-for="audio in TickList" :key="audio">
                     {{ audio }}
                   </option>
@@ -221,24 +222,19 @@
 import { watch, ref } from 'vue';
 import { useSettingsStore } from '@/stores/setting';
 import { timezones, dateFormatType } from '@/assets/timeZone';
-import { formatZone } from '@/helper/timeZone';
+import { formatZone } from '@/composable/timeZone';
 import type { DialogProps } from '@/interface/dialog';
+import useAudio from '@/composable/useAudio';
 //init
 const { settingConfig } = useSettingsStore();
 //sound
+const audio = ref(null);
+const playAudio = (type: string) => {
+  useAudio(type, audio.value);
+};
+
 const AlarmList = ref<string[]>(['Dingdong', 'Bird', 'Cuckoo', 'Dingdingding', 'Happy jingle', 'Pikachu']);
 const TickList = ref<string[]>(['Ticking1', 'Ticking2']);
-
-const audio = new Audio();
-function playAudio(type: string) {
-
-  const fileName = type === 'alarm' ? settingConfig.sound.alarmFileName : settingConfig.sound.tickFileName;
-  const volume = type === 'alarm' ? settingConfig.sound.alarmVolume : settingConfig.sound.tickVolume;
-
-  audio.src = `src/assets/audio/${type}/${fileName}.mp3`;
-  audio.volume = volume / 100;
-  audio.play();
-}
 //timeZone
 const timeZone = ref(timezones);
 const dateType = ref(dateFormatType);

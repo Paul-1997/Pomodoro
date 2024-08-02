@@ -1,5 +1,4 @@
 <template>
-
   <div
     class="fixed inset-0  py-20 w-screen bg-black/60 z-[100] flex items-center justify-center overflow-y-scroll overflow-x-hidden"
     aria-hidden="true" role="dialog" @click.self="closeModal" v-if="props.isShow">
@@ -50,7 +49,6 @@
               After completing four pomodoros, take a longer break (usually 15-30 minutes) before starting the
               next
               set.
-
             </li>
           </ul>
         </article>

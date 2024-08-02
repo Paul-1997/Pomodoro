@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import { getCurrZone } from '@/helper/timeZone';
+import { getCurrZone } from '@/composable/timeZone';
 
 const defaultSettingConfig: SettingConfig = {
   timer: {
