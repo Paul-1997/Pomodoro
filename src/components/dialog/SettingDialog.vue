@@ -1,8 +1,8 @@
 <template>
   <div
     class="fixed inset-0  py-20 w-screen bg-black/60 z-[100] flex items-center justify-center overflow-y-scroll overflow-x-hidden"
-    aria-hidden="true" role="dialog" @click.self="closeModal" v-if="props.isShow">
-    <div class="dialog bg-white *:p-4 rounded-xl shadow-xl mt-[900px]">
+    aria-hidden="true" role="dialog" @click.self="onPickingColor ? '' : closeModal" v-if="props.isShow">
+    <div class="dialog bg-white *:p-4 rounded-xl shadow-xl mt-[900px]" v-if="!onPickingColor">
       <div class="border-b border-gray-200 relative">
         <h3 class="text-4xl font-semibold text-center">設定</h3>
         <button @click="closeModal"
@@ -25,24 +25,24 @@
               <div>
                 <label for="" class="block text-slate-500 mb-1">Pomodoro</label>
                 <input type="number" class="input-field w-full border border-slate-300"
-                  v-model="settingConfig.timer.pomodoroTime">
+                  v-model="useSetting.settingConfig.timer.pomodoroTime">
               </div>
               <div>
                 <label for="" class="block text-slate-500 mb-1">Short Break</label>
                 <input type="number" class="input-field w-full border border-slate-300"
-                  v-model="settingConfig.timer.shortBreak">
+                  v-model="useSetting.settingConfig.timer.shortBreak">
               </div>
               <div>
                 <label for="" class="block text-slate-500 mb-1">Long Break</label>
                 <input type="number" class="input-field w-full border border-slate-300"
-                  v-model="settingConfig.timer.longBreak">
+                  v-model="useSetting.settingConfig.timer.longBreak">
               </div>
             </li>
             <li class="flex items-center justify-between">
               <p>Auto Start Pomodoro</p>
               <label class="inline-flex items-center cursor-pointer">
                 <input type="checkbox" value="" class="sr-only peer"
-                  v-model="settingConfig.timer.enable_autoStartPomodoro">
+                  v-model="useSetting.settingConfig.timer.enable_autoStartPomodoro">
                 <div class="btn-toggle"></div>
               </label>
             </li>
@@ -50,7 +50,7 @@
               <p>Auto Start Break</p>
               <label class="inline-flex items-center cursor-pointer">
                 <input type="checkbox" value="" class="sr-only peer"
-                  v-model="settingConfig.timer.enable_autoStartBreak">
+                  v-model="useSetting.settingConfig.timer.enable_autoStartBreak">
                 <div class="btn-toggle"></div>
               </label>
             </li>
@@ -58,7 +58,7 @@
               <label class="block mb-1">
                 Long Break interval
               </label>
-              <input type="number" value="4" class="input-field w-16" v-model="settingConfig.timer.longBreakInterval">
+              <input type="number" value="4" class="input-field w-16" v-model="useSetting.settingConfig.timer.longBreakInterval">
             </li>
           </ul>
         </section>
@@ -74,7 +74,7 @@
               <p>Auto Check Task</p>
               <label class="inline-flex items-center cursor-pointer">
                 <input type="checkbox" value="" class="sr-only peer"
-                  v-model="settingConfig.task.enable_autoCheckTask" />
+                  v-model="useSetting.settingConfig.task.enable_autoCheckTask" />
                 <div class="btn-toggle"></div>
               </label>
             </li>
@@ -82,14 +82,14 @@
               <p>Auto Switch Task</p>
               <label class="inline-flex items-center cursor-pointer">
                 <input type="checkbox" value="" class="sr-only peer"
-                  v-model="settingConfig.task.enable_autoSwitchTask" />
+                  v-model="useSetting.settingConfig.task.enable_autoSwitchTask" />
                 <div class="btn-toggle"></div>
               </label>
             </li>
             <li class="flex items-center justify-between">
               <p>New Task To Top</p>
               <label class="inline-flex items-center cursor-pointer">
-                <input type="checkbox" value="" class="sr-only peer" v-model="settingConfig.task.enable_newTaskToTop" />
+                <input type="checkbox" value="" class="sr-only peer" v-model="useSetting.settingConfig.task.enable_newTaskToTop" />
                 <div class="btn-toggle"></div>
               </label>
             </li>
@@ -97,7 +97,7 @@
               <p>Auto Remove when task completed</p>
               <label class="inline-flex items-center cursor-pointer">
                 <input type="checkbox" value="" class="sr-only peer"
-                  v-model="settingConfig.task.enable_autoRemoveCompleted">
+                  v-model="useSetting.settingConfig.task.enable_autoRemoveCompleted">
                 <div class="btn-toggle"></div>
               </label>
             </li>
@@ -115,23 +115,26 @@
               <p>color theme</p>
               <ol class="grid grid-cols-3 gap-x-2">
                 <li><a href="#" role="button" class="block size-9 rounded-md"
-                    :style="{ backgroundColor: settingConfig.theme.bgColor.pomodoro }"></a></li>
+                    :style="{ backgroundColor: useSetting.settingConfig.theme.bgColor.pomodoro }"
+                    @click="changeBgColor('pomodoro')"></a></li>
                 <li><a href="#" role="button" class="block size-9 rounded-md"
-                    :style="{ backgroundColor: settingConfig.theme.bgColor.short }"></a></li>
+                    :style="{ backgroundColor: useSetting.settingConfig.theme.bgColor.short }" @click="changeBgColor('short')"></a>
+                </li>
                 <li><a href="#" role="button" class="block size-9 rounded-md"
-                    :style="{ backgroundColor: settingConfig.theme.bgColor.long }"></a></li>
+                    :style="{ backgroundColor: useSetting.settingConfig.theme.bgColor.long }" @click="changeBgColor('long')"></a>
+                </li>
               </ol>
             </li>
             <li class="flex items-center justify-between">
               <label class="me-2">Language</label>
-              <select class="input-field w-full max-w-48" v-model="settingConfig.theme.language">
+              <select class="input-field w-full max-w-48" v-model="useSetting.settingConfig.theme.language">
                 <option value="zh-tw">中文(繁體)</option>
                 <option value="en">English</option>
               </select>
             </li>
             <li class="flex items-center justify-between">
               <label>Time Zone</label>
-              <select class="input-field w-full max-w-48" v-model="settingConfig.theme.timeZone">
+              <select class="input-field w-full max-w-48" v-model="useSetting.settingConfig.theme.timeZone">
                 <option :value="zone" v-for="zone in timeZone" :key="zone">
                   {{ formatZone(zone) }}
                 </option>
@@ -139,7 +142,7 @@
             </li>
             <li class="flex items-center justify-between">
               <label>Date Format</label>
-              <select class="input-field w-full max-w-48" v-model="settingConfig.theme.dateFormat">
+              <select class="input-field w-full max-w-48" v-model="useSetting.settingConfig.theme.dateFormat">
                 <option :value="type" v-for="type in dateType" :key="type">
                   {{ type }}
                 </option>
@@ -147,7 +150,7 @@
             </li>
             <li class="flex items-center justify-between">
               <label class="me-2">Time Format</label>
-              <select class="input-field border-none w-full max-w-28" v-model="settingConfig.theme.timeFormat">
+              <select class="input-field border-none w-full max-w-28" v-model="useSetting.settingConfig.theme.timeFormat">
                 <option value="12hr">12-hour</option>
                 <option value="24hr">24-hour</option>
               </select>
@@ -166,15 +169,15 @@
             <li class="flex items-center justify-between">
               <p>Enable Alarm Sound</p>
               <label class="inline-flex items-center cursor-pointer">
-                <input type="checkbox" class="sr-only peer" v-model="settingConfig.sound.enable_alarmSound">
+                <input type="checkbox" class="sr-only peer" v-model="useSetting.settingConfig.sound.enable_alarmSound">
                 <div class="btn-toggle"></div>
               </label>
             </li>
-            <template v-if="settingConfig.sound.enable_alarmSound">
+            <template v-if="useSetting.settingConfig.sound.enable_alarmSound">
               <li class="flex items-center justify-between">
                 <p>Alarm Sound</p>
                 <select name="audioPlayer" class="input-field w-full max-w-48"
-                  v-model="settingConfig.sound.alarmFileName" @change="playAudio('alarm')">
+                  v-model="useSetting.settingConfig.sound.alarmFileName" @change="playAudio('alarm')">
                   <option :value="audio" v-for="audio in AlarmList" :key="audio">
                     {{ audio }}
                   </option>
@@ -182,23 +185,23 @@
               </li>
               <li class="flex items-center justify-between">
                 <p>Alarm volume</p>
-                <input type="range" class="input-field" v-model="settingConfig.sound.alarmVolume" min="1" max="100"
+                <input type="range" class="input-field" v-model="useSetting.settingConfig.sound.alarmVolume" min="1" max="100"
                   @change="playAudio('alarm')">
               </li>
             </template>
             <li class="flex items-center justify-between">
               <p>Enable Tick Sound</p>
               <label class="inline-flex items-center cursor-pointer">
-                <input type="checkbox" class="sr-only peer" v-model="settingConfig.sound.enable_tickSound">
+                <input type="checkbox" class="sr-only peer" v-model="useSetting.settingConfig.sound.enable_tickSound">
                 <div class="btn-toggle"></div>
               </label>
             </li>
-            <template v-if="settingConfig.sound.enable_tickSound">
+            <template v-if="useSetting.settingConfig.sound.enable_tickSound">
 
               <li class="flex items-center justify-between">
                 <p>Tick Sound</p>
                 <select name="audioPlayer" class="input-field w-full max-w-48"
-                  v-model="settingConfig.sound.tickFileName" @change="playAudio('tick')">
+                  v-model="useSetting.settingConfig.sound.tickFileName" @change="playAudio('tick')">
                   <option :value="audio" v-for="audio in TickList" :key="audio">
                     {{ audio }}
                   </option>
@@ -206,13 +209,24 @@
               </li>
               <li class="flex items-center justify-between">
                 <p>Tick volume</p>
-                <input type="range" class="input-field" v-model="settingConfig.sound.tickVolume"
+                <input type="range" class="input-field" v-model="useSetting.settingConfig.sound.tickVolume"
                   @change="playAudio('ticking')">
               </li>
             </template>
           </ul>
         </section>
       </div>
+    </div>
+    <div id="colorPicker" v-else class="bg-white bg-opacity-75 w-80 rounded-md">
+      <h2 class="text-center py-3 border-b-2 border-zinc-400">
+        將
+        <strong class="text-lg px-0.5">{{ getColorText(colorPickerObj.currType) }}</strong>
+        的顏色設定為 :
+      </h2>
+      <ol class="flex flex-wrap gap-3 justify-center items-center p-5">
+        <li v-for="color in bgColorList" :key="`bg-${color}`" class="size-8 rounded-md cursor-pointer"
+          :style="{ 'background-color': color }" @click="chooseColor(color)"></li>
+      </ol>
     </div>
   </div>
 
@@ -226,12 +240,35 @@ import { formatZone } from '@/composable/timeZone';
 import type { DialogProps } from '@/interface/dialog';
 import useAudio from '@/composable/useAudio';
 //init
-const { settingConfig } = useSettingsStore();
+const useSetting = useSettingsStore();
 //sound
 const audio = ref(null);
 const playAudio = (type: string) => {
   useAudio(type, audio.value);
 };
+//changeBg
+const colorPickerObj = ref({
+  currType: 'pomodoro',
+});
+
+const onPickingColor = ref(false);
+const bgColorList = ['red', 'blue', 'cyan'];
+function getColorText(type: string = 'pomodoro') {
+  if (type === 'long') return '長休息'
+  else if (type === 'short') return '短休息'
+  else return '番茄鐘'
+}
+function changeBgColor(type: string) {
+  onPickingColor.value = true;
+  colorPickerObj.value.currType = type;
+}
+function chooseColor(color: string) {
+  //change Setting
+  if(colorPickerObj.value.currType === 'pomodoro') useSetting.settingConfig.theme.bgColor.pomodoro = color;
+  if(colorPickerObj.value.currType === 'short') useSetting.settingConfig.theme.bgColor.short = color;
+  if(colorPickerObj.value.currType === 'long') useSetting.settingConfig.theme.bgColor.long = color;
+}
+
 
 const AlarmList = ref<string[]>(['Dingdong', 'Bird', 'Cuckoo', 'Dingdingding', 'Happy jingle', 'Pikachu']);
 const TickList = ref<string[]>(['Ticking1', 'Ticking2']);

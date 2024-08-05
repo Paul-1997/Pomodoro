@@ -1,5 +1,5 @@
 <template>
-  <main class="bg-[#CD5C5C] min-h-dvh py-8">
+  <main class=" min-h-dvh py-8" :style="{'background-color' : getCurrBg}">
     <div class="mx-auto px-4">
       <nav class="py-6 mb-10">
         <ul class="flex justify-center items-center gap-x-8">
@@ -78,7 +78,7 @@ import { useTaskStore } from '@/stores/task';
 import type { Pomodoro } from '@/interface/pomodoro';
 import useAudio from '@/composable/useAudio';
 
-const { settingConfig } = useSettingsStore();
+const useSetting = useSettingsStore();
 const useTask = useTaskStore();
 //status
 const currModal = ref('');
@@ -92,7 +92,7 @@ const openDialog = (target: string) => {
 }
 //pomodoro
 const pomodoro = ref<Pomodoro>({
-  remainingTime: settingConfig.timer.pomodoroTime - 20,
+  remainingTime: useSetting.settingConfig.timer.pomodoroTime - 20,
   workStatus: 'pomodoroTime',
   timerStatus: 'stopped'
 });
@@ -117,21 +117,21 @@ const finishTimer = (isSkip: boolean = false) => {
 
   if (pomodoro.value.workStatus === 'pomodoroTime') {
     useTask.completePomodoro();
-    const status = useTask.currTaskCompletedPomodoro % settingConfig.timer.longBreakInterval ? 'shortBreak' : 'longBreak';
+    const status = useTask.currTaskCompletedPomodoro % useSetting.settingConfig.timer.longBreakInterval ? 'shortBreak' : 'longBreak';
     pomodoro.value.workStatus = status;
   }
   else {
     pomodoro.value.workStatus = 'pomodoroTime';
   }
   //reset time
-  pomodoro.value.remainingTime = settingConfig.timer[pomodoro.value.workStatus] * 60;
+  pomodoro.value.remainingTime = useSetting.settingConfig.timer[pomodoro.value.workStatus] * 60;
   //autoStart
   if (!isSkip) {
-    if (settingConfig.timer.enable_autoStartBreak && pomodoro.value.workStatus !== 'pomodoroTime') {
+    if (useSetting.settingConfig.timer.enable_autoStartBreak && pomodoro.value.workStatus !== 'pomodoroTime') {
       pomodoro.value.timerStatus = 'running';
       runTimer();
     }
-    else if (settingConfig.timer.enable_autoStartPomodoro && pomodoro.value.workStatus === 'pomodoroTime') {
+    else if (useSetting.settingConfig.timer.enable_autoStartPomodoro && pomodoro.value.workStatus === 'pomodoroTime') {
       pomodoro.value.timerStatus = 'running';
       runTimer();;
     }
@@ -149,7 +149,14 @@ watch(() => pomodoro.value, () => {
   }
 }, { deep: true })
 
+//bg
+const getCurrBg = computed(()=>{
+  const currState = pomodoro.value.workStatus;
 
+  if(currState === 'shortBreak') return useSetting.settingConfig.theme.bgColor.short
+  if(currState === 'longBreak') return useSetting.settingConfig.theme.bgColor.long
+  return useSetting.settingConfig.theme.bgColor.pomodoro
+})
 </script>
 <style scoped>
 .pomodoro {

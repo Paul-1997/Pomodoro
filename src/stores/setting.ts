@@ -19,7 +19,7 @@ const defaultSettingConfig: SettingConfig = {
   },
   theme: {
     bgColor: {
-      pomodoro: '#FF6347',
+      pomodoro: '#CD5C5C',
       short: 'cyan',
       long: 'green',
     },

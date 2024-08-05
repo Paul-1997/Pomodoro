@@ -90,7 +90,7 @@
                   more_vert
                 </span>
               </button>
-              {{ settingConfig.task.enable_autoRemoveCompleted }}
+              {{ useSetting.settingConfig.task.enable_autoRemoveCompleted }}
             </div>
           </div>
           <!-- plans -->
@@ -135,7 +135,7 @@ import { useTaskStore } from '@/stores/task';
 import { useSettingsStore } from '@/stores/setting';
 
 
-const { settingConfig } = useSettingsStore();
+const useSetting = useSettingsStore();
 const useTask = useTaskStore();
 
 const onAddTask = ref(false);
@@ -160,7 +160,7 @@ const deletePlan = (id: string) => newPlans.value = newPlans.value.filter((plan:
 
 const completeTask = (task: Task) => {
   //removeWhenCompleted
-  if (settingConfig.task.enable_autoRemoveCompleted && task.isCompleted) useTask.removeTask(task.id);
+  if (useSetting.settingConfig.task.enable_autoRemoveCompleted && task.isCompleted) useTask.removeTask(task.id);
 }
 const buildTask = () => {
 
