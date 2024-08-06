@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed inset-0  py-20 w-screen bg-black/60 z-[100] flex items-center justify-center overflow-y-scroll overflow-x-hidden"
+    class="fixed inset-0  py-20 w-screen bg-transparent z-[100] flex items-center justify-center overflow-y-scroll overflow-x-hidden"
     aria-hidden="true" role="dialog" @click.self="onPickingColor ? '' : closeModal" v-if="props.isShow">
     <div class="dialog bg-white *:p-4 rounded-xl shadow-xl mt-[900px]" v-if="!onPickingColor">
       <div class="border-b border-gray-200 relative">
@@ -58,7 +58,8 @@
               <label class="block mb-1">
                 Long Break interval
               </label>
-              <input type="number" value="4" class="input-field w-16" v-model="useSetting.settingConfig.timer.longBreakInterval">
+              <input type="number" value="4" class="input-field w-16"
+                v-model="useSetting.settingConfig.timer.longBreakInterval">
             </li>
           </ul>
         </section>
@@ -89,7 +90,8 @@
             <li class="flex items-center justify-between">
               <p>New Task To Top</p>
               <label class="inline-flex items-center cursor-pointer">
-                <input type="checkbox" value="" class="sr-only peer" v-model="useSetting.settingConfig.task.enable_newTaskToTop" />
+                <input type="checkbox" value="" class="sr-only peer"
+                  v-model="useSetting.settingConfig.task.enable_newTaskToTop" />
                 <div class="btn-toggle"></div>
               </label>
             </li>
@@ -118,10 +120,12 @@
                     :style="{ backgroundColor: useSetting.settingConfig.theme.bgColor.pomodoro }"
                     @click="changeBgColor('pomodoro')"></a></li>
                 <li><a href="#" role="button" class="block size-9 rounded-md"
-                    :style="{ backgroundColor: useSetting.settingConfig.theme.bgColor.short }" @click="changeBgColor('short')"></a>
+                    :style="{ backgroundColor: useSetting.settingConfig.theme.bgColor.short }"
+                    @click="changeBgColor('short')"></a>
                 </li>
                 <li><a href="#" role="button" class="block size-9 rounded-md"
-                    :style="{ backgroundColor: useSetting.settingConfig.theme.bgColor.long }" @click="changeBgColor('long')"></a>
+                    :style="{ backgroundColor: useSetting.settingConfig.theme.bgColor.long }"
+                    @click="changeBgColor('long')"></a>
                 </li>
               </ol>
             </li>
@@ -150,7 +154,8 @@
             </li>
             <li class="flex items-center justify-between">
               <label class="me-2">Time Format</label>
-              <select class="input-field border-none w-full max-w-28" v-model="useSetting.settingConfig.theme.timeFormat">
+              <select class="input-field border-none w-full max-w-28"
+                v-model="useSetting.settingConfig.theme.timeFormat">
                 <option value="12hr">12-hour</option>
                 <option value="24hr">24-hour</option>
               </select>
@@ -185,8 +190,8 @@
               </li>
               <li class="flex items-center justify-between">
                 <p>Alarm volume</p>
-                <input type="range" class="input-field" v-model="useSetting.settingConfig.sound.alarmVolume" min="1" max="100"
-                  @change="playAudio('alarm')">
+                <input type="range" class="input-field" v-model="useSetting.settingConfig.sound.alarmVolume" min="1"
+                  max="100" @change="playAudio('alarm')">
               </li>
             </template>
             <li class="flex items-center justify-between">
@@ -217,23 +222,26 @@
         </section>
       </div>
     </div>
-    <div id="colorPicker" v-else class="bg-white bg-opacity-75 w-80 rounded-md">
+    <div id="colorPicker" v-else class="bg-gray-50 w-80 rounded-md">
       <h2 class="text-center py-3 border-b-2 border-zinc-400">
         將
-        <strong class="text-lg px-0.5">{{ getColorText(colorPickerObj.currType) }}</strong>
+        <strong class="text-lg px-0.5">{{ getColorText(currColorType) }}</strong>
         的顏色設定為 :
       </h2>
-      <ol class="flex flex-wrap gap-3 justify-center items-center p-5">
-        <li v-for="color in bgColorList" :key="`bg-${color}`" class="size-8 rounded-md cursor-pointer"
-          :style="{ 'background-color': color }" @click="chooseColor(color)"></li>
-      </ol>
+      <div class="colorPicker__body">
+        <ol class="flex flex-wrap gap-3 justify-center items-center p-5">
+          <li v-for="color in colorList" :key="`bg-${color}`" class="size-8 rounded-md cursor-pointer"
+            :style="{ 'background-color': color }" :class="isCurrBgColor(color)" @click="chooseColor(color)"></li>
+        </ol>
+      </div>
+
     </div>
   </div>
 
 
 </template>
 <script setup lang="ts">
-import { watch, ref } from 'vue';
+import { watch, ref, computed } from 'vue';
 import { useSettingsStore } from '@/stores/setting';
 import { timezones, dateFormatType } from '@/assets/timeZone';
 import { formatZone } from '@/composable/timeZone';
@@ -247,26 +255,47 @@ const playAudio = (type: string) => {
   useAudio(type, audio.value);
 };
 //changeBg
-const colorPickerObj = ref({
-  currType: 'pomodoro',
-});
+const colorList = [
+  "#CD5C5C", // Indian Red
+  "#5F9EA0", // Cadet Blue
+  "#228B22", // Forest Green
+  "#4682B4", // Steel Blue
+  "#FF69B4", // Hot Pink
+  "#BA55D3", // Medium Orchid
+  "#20B2AA", // Light Sea Green
+  "#9370DB", // Medium Purple
+  "#518a58", //Dark Sea Green
+  "#B8860B", // Dark Goldenrod
+  "#8B4513", // Saddle Brown
+  "#708090",  // Slate Gray,
+  // "#FF8C69", // Salmon
+];
 
-const onPickingColor = ref(false);
-const bgColorList = ['red', 'blue', 'cyan'];
+type currColorType = 'pomodoro' | 'short' | 'long';
+
+const currColorType = ref<currColorType>('pomodoro');
+const isCurrBgColor = (color: string) => {
+  const curr = useSetting.settingConfig.theme.bgColor[currColorType.value];
+  return curr === color ? 'ring ring-currentColor' : ''
+
+};
+// , "#5CA4AD" , '#96E000'
+const onPickingColor = ref(true);
 function getColorText(type: string = 'pomodoro') {
   if (type === 'long') return '長休息'
   else if (type === 'short') return '短休息'
   else return '番茄鐘'
 }
-function changeBgColor(type: string) {
+function changeBgColor(type: currColorType) {
   onPickingColor.value = true;
-  colorPickerObj.value.currType = type;
+  currColorType.value = type;
 }
 function chooseColor(color: string) {
   //change Setting
-  if(colorPickerObj.value.currType === 'pomodoro') useSetting.settingConfig.theme.bgColor.pomodoro = color;
-  if(colorPickerObj.value.currType === 'short') useSetting.settingConfig.theme.bgColor.short = color;
-  if(colorPickerObj.value.currType === 'long') useSetting.settingConfig.theme.bgColor.long = color;
+  if (currColorType.value === 'pomodoro') useSetting.settingConfig.theme.bgColor.pomodoro = color;
+  if (currColorType.value === 'short') useSetting.settingConfig.theme.bgColor.short = color;
+  if (currColorType.value === 'long') useSetting.settingConfig.theme.bgColor.long = color;
+  onPickingColor.value = false;
 }
 
 

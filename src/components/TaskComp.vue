@@ -2,7 +2,7 @@
   <div class="task px-4 pb-10 h-full">
     <div class="task__input mb-4">
       <button v-if="!onAddTask" @click="addTask"
-        class="py-3 bg-slate-100 bg-opacity-20 border-2 border-dashed rounded-lg w-full flex items-center justify-center group text-slate-300 hover:text-slate-50 text-lg">
+        class="py-3 bg-slate-100 bg-opacity-25 border-2 border-dashed rounded-lg w-full flex items-center justify-center group text-slate-300 hover:text-slate-50 text-lg">
         <span class="material-symbols-outlined  me-1" style="font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 200">
           add_circle
         </span>
@@ -74,7 +74,7 @@
         </div>
       </div>
     </div>
-    <ul class="task__list bg-white bg-opacity-50 rounded px-1" v-if="useTask.TaskList.length">
+    <ul class="task__list bg-white bg-opacity-75 rounded px-1" v-if="useTask.TaskList.length">
       {{ useTask.TaskList }}
       {{ useTask.currTask }}
       <li v-for="task in useTask.TaskList" :key="task.id" class="pb-1 space-y-2">

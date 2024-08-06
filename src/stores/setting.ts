@@ -20,8 +20,8 @@ const defaultSettingConfig: SettingConfig = {
   theme: {
     bgColor: {
       pomodoro: '#CD5C5C',
-      short: 'cyan',
-      long: 'green',
+      short: '#5F9EA0',
+      long: '#228B22',
     },
     language: 'zh-tw',
     timeZone: getCurrZone,

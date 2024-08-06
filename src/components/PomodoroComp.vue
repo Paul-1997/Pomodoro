@@ -1,5 +1,5 @@
 <template>
-  <main class=" min-h-dvh py-8" :style="{'background-color' : getCurrBg}">
+  <main class=" min-h-dvh py-8 transition-colors duration-1000" :style="{ 'background-color': getCurrBg }">
     <div class="mx-auto px-4">
       <nav class="py-6 mb-10">
         <ul class="flex justify-center items-center gap-x-8">
@@ -40,7 +40,11 @@
             {{ pomodoro.workStatus === 'pomodoroTime' ? 'work' : pomodoro.workStatus }}
           </div>
           <div class="pomodoro__timer relative mx-auto rounded-full bg-white size-[300px] mb-10">
-            <div class="size-[260px] rounded-full bg-red-400 absolute inset-5 grid place-content-center">
+            <div
+              class="size-[260px] rounded-full absolute inset-5 grid place-content-center transition-colors duration-1000"
+              :style="{
+                'background-color': getCurrBg
+              }">
               <span class="text-7xl">{{ getFormatRemainTime }}</span>
             </div>
           </div>
@@ -150,12 +154,12 @@ watch(() => pomodoro.value, () => {
 }, { deep: true })
 
 //bg
-const getCurrBg = computed(()=>{
+const getCurrBg = computed(() => {
   const currState = pomodoro.value.workStatus;
 
-  if(currState === 'shortBreak') return useSetting.settingConfig.theme.bgColor.short
-  if(currState === 'longBreak') return useSetting.settingConfig.theme.bgColor.long
-  return useSetting.settingConfig.theme.bgColor.pomodoro
+  if (currState === 'shortBreak') return useSetting.settingConfig.theme.bgColor.short;
+  if (currState === 'longBreak') return useSetting.settingConfig.theme.bgColor.long;
+  return useSetting.settingConfig.theme.bgColor.pomodoro;
 })
 </script>
 <style scoped>
