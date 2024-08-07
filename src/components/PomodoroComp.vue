@@ -1,82 +1,34 @@
 <template>
-  <main class=" min-h-dvh py-8 transition-colors duration-1000" :style="{ 'background-color': getCurrBg }">
-    <div class="mx-auto px-4">
-      <nav class="py-6 mb-10">
-        <ul class="flex justify-center items-center gap-x-8">
-          <li>
-            <RouterLink to="/" class="text-3xl bg-white bg-clip-text text-transparent">
-              Pomodoro
-            </RouterLink>
-          </li>
-          <li>
-            <button type="button" @click="openDialog('settings')">
-              <span class="material-symbols-outlined icon-fill text-white">
-                settings
-              </span>
-            </button>
-          </li>
-          <li>
-            <button type="button" @click="openDialog('status')">
-              <span class="material-symbols-outlined text-white">
-                analytics
-              </span>
-            </button>
-          </li>
-          <li>
-            <button type="button" @click="openDialog('manual')">
-              <span class="material-symbols-outlined text-white">
-                help
-              </span>
-            </button>
-
-          </li>
-        </ul>
-      </nav>
-
-      {{ useTask.currTaskCompletedPomodoro }}
-      <div class="grid lg:grid-cols-2 justify-center gap-8">
-        <div class="pomodoro mx-auto">
-          <div class="w-fit mb-8 mx-auto py-3 px-10 rounded-lg bg-black bg-opacity-25 text-gray-200 text-3xl">
-            {{ pomodoro.workStatus === 'pomodoroTime' ? 'work' : pomodoro.workStatus }}
-          </div>
-          <div class="pomodoro__timer relative mx-auto rounded-full bg-white size-[300px] mb-10">
-            <div
-              class="size-[260px] rounded-full absolute inset-5 grid place-content-center transition-colors duration-1000"
-              :style="{
-                'background-color': getCurrBg
-              }">
-              <span class="text-7xl">{{ getFormatRemainTime }}</span>
-            </div>
-          </div>
-          <div class="pomodoro__buttons w-fit mx-auto">
-            <button type="button" class="py-2 px-4 min-w-40 rounded-lg bg-gray-100" @click="toggleTimer"
-              v-if="pomodoro.timerStatus !== 'running'">Start</button>
-            <div v-else class="*:cursor-pointer">
-              <span class="material-symbols-outlined icon-fill text-gray-100 text-5xl leading-none me-4"
-                @click="toggleTimer">
-                pause
-              </span>
-              <span class="material-symbols-outlined icon-fill text-gray-100 text-5xl leading-none "
-                @click="finishTimer()">
-                skip_next
-              </span>
-            </div>
-          </div>
-        </div>
-        <TaskComp></TaskComp>
+  <div class="pomodoro mx-auto">
+    <div class="w-fit mb-8 mx-auto py-3 px-10 rounded-lg bg-black bg-opacity-25 text-gray-200 text-3xl">
+      {{ formatWorkStatue }}
+    </div>
+    <div class="pomodoro__timer relative mx-auto rounded-full bg-white size-[300px] mb-10">
+      <div class="size-[260px] rounded-full absolute inset-5 grid place-content-center transition-colors duration-1000"
+        :style="{
+          'background-color': props.currBg
+        }">
+        <span class="text-7xl">{{ getFormatRemainTime }}</span>
       </div>
     </div>
-  </main>
+    <div class="pomodoro__buttons w-fit mx-auto">
+      <button type="button" class="py-2 px-4 min-w-40 rounded-lg bg-gray-100" @click="toggleTimer"
+        v-if="pomodoro.timerStatus !== 'running'">Start</button>
+      <div v-else class="*:cursor-pointer">
+        <span class="material-symbols-outlined icon-fill text-gray-100 text-5xl leading-none me-4" @click="toggleTimer">
+          pause
+        </span>
+        <span class="material-symbols-outlined icon-fill text-gray-100 text-5xl leading-none " @click="finishTimer()">
+          skip_next
+        </span>
+      </div>
+    </div>
+  </div>
 
-  <Setting v-model:isShow="showModal" v-if="currModal === 'settings'" />
-  <Manual v-model:isShow="showModal" v-if="currModal === 'manual'" />
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import Setting from './dialog/SettingDialog.vue';
-import Manual from './dialog/ManualDialog.vue';
-import TaskComp from '@/components/TaskComp.vue'
 import { useSettingsStore } from '@/stores/setting';
 import { useTaskStore } from '@/stores/task';
 import type { Pomodoro } from '@/interface/pomodoro';
@@ -84,16 +36,16 @@ import useAudio from '@/composable/useAudio';
 
 const useSetting = useSettingsStore();
 const useTask = useTaskStore();
-//status
-const currModal = ref('');
-const showModal = ref(false);
+const props = defineProps({
+  currBg: {
+    type: String,
+    required: true
+  },
+});
+const emit = defineEmits(['updateWorkStatue'])
+
 //timer 
 let timer: number | NodeJS.Timeout;
-//data
-const openDialog = (target: string) => {
-  currModal.value = target;
-  showModal.value = true
-}
 //pomodoro
 const pomodoro = ref<Pomodoro>({
   remainingTime: useSetting.settingConfig.timer.pomodoroTime - 20,
@@ -107,6 +59,10 @@ const getFormatRemainTime = computed((): string => {
   const s = (time % 60).toString().padStart(2, '0');
   return `${m}:${s}`;
 });
+const formatWorkStatue = computed(() => {
+  if (pomodoro.value.workStatus === 'pomodoroTime') return 'Work'
+  return pomodoro.value.workStatus === 'shortBreak' ? 'short break' : 'long break';
+})
 //active/pause timer
 const toggleTimer = (): void => {
   pomodoro.value.timerStatus = pomodoro.value.timerStatus !== 'running' ? 'running' : 'paused'
@@ -152,15 +108,10 @@ watch(() => pomodoro.value, () => {
     finishTimer();
   }
 }, { deep: true })
-
-//bg
-const getCurrBg = computed(() => {
-  const currState = pomodoro.value.workStatus;
-
-  if (currState === 'shortBreak') return useSetting.settingConfig.theme.bgColor.short;
-  if (currState === 'longBreak') return useSetting.settingConfig.theme.bgColor.long;
-  return useSetting.settingConfig.theme.bgColor.pomodoro;
+watch(() => pomodoro.value.workStatus, (newVal) => {
+  emit('updateWorkStatue', newVal);
 })
+
 </script>
 <style scoped>
 .pomodoro {

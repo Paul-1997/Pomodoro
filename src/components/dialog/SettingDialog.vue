@@ -117,15 +117,15 @@
               <p>color theme</p>
               <ol class="grid grid-cols-3 gap-x-2">
                 <li><a href="#" role="button" class="block size-9 rounded-md"
-                    :style="{ backgroundColor: useSetting.settingConfig.theme.bgColor.pomodoro }"
-                    @click="changeBgColor('pomodoro')"></a></li>
+                    :style="{ backgroundColor: useSetting.settingConfig.theme.bgColor.pomodoroTime }"
+                    @click="changeBgColor('pomodoroTime')"></a></li>
                 <li><a href="#" role="button" class="block size-9 rounded-md"
-                    :style="{ backgroundColor: useSetting.settingConfig.theme.bgColor.short }"
-                    @click="changeBgColor('short')"></a>
+                    :style="{ backgroundColor: useSetting.settingConfig.theme.bgColor.shortBreak }"
+                    @click="changeBgColor('shortBreak')"></a>
                 </li>
                 <li><a href="#" role="button" class="block size-9 rounded-md"
-                    :style="{ backgroundColor: useSetting.settingConfig.theme.bgColor.long }"
-                    @click="changeBgColor('long')"></a>
+                    :style="{ backgroundColor: useSetting.settingConfig.theme.bgColor.longBreak }"
+                    @click="changeBgColor('longBreak')"></a>
                 </li>
               </ol>
             </li>
@@ -247,6 +247,7 @@ import { timezones, dateFormatType } from '@/assets/timeZone';
 import { formatZone } from '@/composable/timeZone';
 import type { DialogProps } from '@/interface/dialog';
 import useAudio from '@/composable/useAudio';
+import type { WorkStatus } from '@/interface/pomodoro';
 //init
 const useSetting = useSettingsStore();
 //sound
@@ -271,30 +272,28 @@ const colorList = [
   // "#FF8C69", // Salmon
 ];
 
-type currColorType = 'pomodoro' | 'short' | 'long';
 
-const currColorType = ref<currColorType>('pomodoro');
+
+const currColorType = ref<WorkStatus>('pomodoroTime');
 const isCurrBgColor = (color: string) => {
   const curr = useSetting.settingConfig.theme.bgColor[currColorType.value];
-  return curr === color ? 'ring ring-currentColor' : ''
-
+  return curr === color ? 'ring ring-currentColor' : '';
 };
-// , "#5CA4AD" , '#96E000'
-const onPickingColor = ref(true);
+const onPickingColor = ref(false);
 function getColorText(type: string = 'pomodoro') {
-  if (type === 'long') return '長休息'
-  else if (type === 'short') return '短休息'
-  else return '番茄鐘'
+  if (type === 'long') return '長休息';
+  else if (type === 'short') return '短休息';
+  else return '番茄鐘';
 }
-function changeBgColor(type: currColorType) {
+function changeBgColor(type: WorkStatus) {
   onPickingColor.value = true;
   currColorType.value = type;
 }
 function chooseColor(color: string) {
   //change Setting
-  if (currColorType.value === 'pomodoro') useSetting.settingConfig.theme.bgColor.pomodoro = color;
-  if (currColorType.value === 'short') useSetting.settingConfig.theme.bgColor.short = color;
-  if (currColorType.value === 'long') useSetting.settingConfig.theme.bgColor.long = color;
+  if (currColorType.value === 'pomodoroTime') useSetting.settingConfig.theme.bgColor.pomodoroTime = color;
+  if (currColorType.value === 'shortBreak') useSetting.settingConfig.theme.bgColor.shortBreak = color;
+  if (currColorType.value === 'longBreak') useSetting.settingConfig.theme.bgColor.longBreak = color;
   onPickingColor.value = false;
 }
 

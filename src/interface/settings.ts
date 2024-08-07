@@ -15,9 +15,9 @@ interface SettingConfig {
   },
   theme: {
     bgColor: {
-      pomodoro: string,
-      short: string,
-      long: string,
+      pomodoroTime: string,
+      shortBreak: string,
+      longBreak: string,
     },
     language: string,
     timeZone: string,

@@ -19,9 +19,9 @@ const defaultSettingConfig: SettingConfig = {
   },
   theme: {
     bgColor: {
-      pomodoro: '#CD5C5C',
-      short: '#5F9EA0',
-      long: '#228B22',
+      pomodoroTime: '#CD5C5C',
+      shortBreak: '#5F9EA0',
+      longBreak: '#228B22',
     },
     language: 'zh-tw',
     timeZone: getCurrZone,

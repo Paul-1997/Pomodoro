@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div
     class="fixed inset-0  py-20 w-screen bg-black/60 z-[100] flex items-center justify-center overflow-y-scroll overflow-x-hidden"
     aria-hidden="true" role="dialog" @click.self="closeModal" v-if="props.isShow">
@@ -66,4 +66,4 @@ const emit = defineEmits(['update:isShow']);
 const closeModal = () => emit('update:isShow', false);
 </script>
 
-<style scoped></style>
+<style scoped></style> -->
