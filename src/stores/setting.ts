@@ -1,6 +1,6 @@
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { defineStore } from 'pinia';
-import { getCurrZone } from '@/composable/timeZone';
+import { getCurrZone } from '@/composable/timeZone.ts';
 
 const defaultSettingConfig: SettingConfig = {
   timer: {
@@ -13,7 +13,7 @@ const defaultSettingConfig: SettingConfig = {
   },
   task: {
     enable_autoCheckTask: true,
-    enable_autoSwitchTask: true,  
+    enable_autoSwitchTask: true,
     enable_newTaskToTop: false,
     enable_autoRemoveCompleted: false,
   },
@@ -35,14 +35,34 @@ const defaultSettingConfig: SettingConfig = {
     tickVolume: 75,
     alarmFileName: 'Dingdong',
     tickFileName: 'Ticking1',
-  }
+  },
 };
-let CustomSettingConfig : SettingConfig | null = null;
-export const useSettingsStore = defineStore('settingConfig', () => {
-  let settingConfig = ref(CustomSettingConfig ?? defaultSettingConfig);
+// let CustomSettingConfig:SettingConfig  = JSON.parse(localStorage.getItem('customSetting'));
+const useSettingsStore = defineStore('settingConfig', () => {
+  const localSetting = localStorage.getItem('customSetting');
+  const customSettingConfig: SettingConfig | null = localSetting ? JSON.parse(localSetting) : null;
+  // instance
+  const settingConfig = ref<SettingConfig>(customSettingConfig ?? defaultSettingConfig);
 
-  function backToDefault():void{
-    settingConfig.value = defaultSettingConfig;
+  const isChange = ref(false);
+
+  watch(
+    settingConfig.value,
+    () => {
+      isChange.value = true;
+    },
+    { deep: true },
+  );
+
+  function changeSetting() {
+    if (isChange.value) {
+      const value = JSON.stringify(settingConfig.value);
+      localStorage.setItem('customSetting', value);
+      isChange.value = false;
+    }
   }
-  return { settingConfig,backToDefault };
+
+  return { settingConfig, changeSetting };
 });
+
+export default useSettingsStore;

@@ -1,35 +1,35 @@
 interface SettingConfig {
-  timer : {
-    pomodoroTime : number,
-    shortBreak: number,
-    longBreak: number,
-    longBreakInterval: number,
-    enable_autoStartBreak : boolean,
-    enable_autoStartPomodoro : boolean,
-  },
+  timer: {
+    pomodoroTime: number;
+    shortBreak: number;
+    longBreak: number;
+    longBreakInterval: number;
+    enable_autoStartBreak: boolean;
+    enable_autoStartPomodoro: boolean;
+  };
   task: {
-    enable_autoCheckTask : boolean,
-    enable_autoSwitchTask : boolean,
-    enable_newTaskToTop : boolean,
-    enable_autoRemoveCompleted : boolean,
-  },
+    enable_autoCheckTask: boolean;
+    enable_autoSwitchTask: boolean;
+    enable_newTaskToTop: boolean;
+    enable_autoRemoveCompleted: boolean;
+  };
   theme: {
     bgColor: {
-      pomodoroTime: string,
-      shortBreak: string,
-      longBreak: string,
-    },
-    language: string,
-    timeZone: string,
-    dateFormat: string,
-    timeFormat: '12hr' | '24hr',
-  },
+      pomodoroTime: string;
+      shortBreak: string;
+      longBreak: string;
+    };
+    language: string;
+    timeZone: string;
+    dateFormat: string;
+    timeFormat: '12hr' | '24hr';
+  };
   sound: {
-    enable_alarmSound: boolean,
-    enable_tickSound: boolean,
-    alarmVolume: number,
-    tickVolume: number,
-    alarmFileName: string,
-    tickFileName: string
-  }
+    enable_alarmSound: boolean;
+    enable_tickSound: boolean;
+    alarmVolume: number;
+    tickVolume: number;
+    alarmFileName: string;
+    tickFileName: string;
+  };
 }

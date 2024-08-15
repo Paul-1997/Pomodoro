@@ -8,25 +8,23 @@
       </li>
       <li>
         <button type="button" @click="emit('openDialog', 'settings')">
-          <span class="material-symbols-outlined icon-fill text-white">
-            settings
-          </span>
+          <span class="material-symbols-outlined icon-fill text-white"> settings </span>
         </button>
       </li>
       <li>
         <button type="button" @click="emit('openDialog', 'status')">
-          <span class="material-symbols-outlined text-white">
-            analytics
-          </span>
+          <span class="material-symbols-outlined text-white"> analytics </span>
         </button>
       </li>
       <li>
         <button type="button" @click="emit('openDialog', 'manual')">
-          <span class="material-symbols-outlined text-white">
-            help
-          </span>
+          <span class="material-symbols-outlined text-white"> help </span>
         </button>
-
+      </li>
+      <li>
+        <RouterLink to="/state" class="text-3xl bg-white bg-clip-text text-transparent font-bold leading-tight">
+          <span class="material-symbols-outlined text-blue"> help </span>
+        </RouterLink>
       </li>
     </ul>
   </nav>
@@ -35,5 +33,5 @@
 <script setup lang="ts">
 import { defineEmits } from 'vue';
 
-const emit = defineEmits(['openDialog'])
+const emit = defineEmits(['openDialog']);
 </script>

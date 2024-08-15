@@ -1,9 +1,8 @@
 /** @type {import('tailwindcss').Config} */
+import aspectRatio from '@tailwindcss/aspect-ratio';
+
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{vue,js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
     extend: {
       fontSize: {
@@ -39,8 +38,5 @@ export default {
       padding: '0.75rem',
     },
   },
-  plugins: [
-    require('@tailwindcss/aspect-ratio'),
-  ],
+  plugins: [aspectRatio],
 };
-

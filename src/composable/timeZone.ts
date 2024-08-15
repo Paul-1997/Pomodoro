@@ -1,4 +1,4 @@
-export const getCurrZone = function ():string {
+export const getCurrZone = ((): string => {
   // 获取当前时区偏移量，以分钟为单位
   const offset = new Date().getTimezoneOffset();
 
@@ -13,10 +13,9 @@ export const getCurrZone = function ():string {
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   return `${utcOffset}_${timezone}`;
+})();
 
-}();
-
-export const formatZone = (zone: string):string => {
+export const formatZone = (zone: string): string => {
   const zoneSplit = zone.split('_');
-  return `(${zoneSplit.shift()}) ${[...zoneSplit].join('')}`
-}
+  return `(${zoneSplit.shift()}) ${[...zoneSplit].join('')}`;
+};
