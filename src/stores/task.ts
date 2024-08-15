@@ -39,8 +39,32 @@ const useTaskStore = defineStore('taskStore', () => {
   }
 
   function completePomodoro() {
-    currTaskCompletedPomodoro.value++;
-    console.log(currTaskCompletedPomodoro.value);
+    // 确保 currTask 和 currTask.value 不为 undefined
+    if (currTask.value && TaskList.value.length && currTask.value.plans?.length) {
+      const planIdx = currTask.value.plans.findIndex((plan) => !plan.isCheck);
+
+      // 确保 planIdx 和 taskIdx 的有效性
+      if (planIdx !== -1) {
+        const taskIdx = TaskList.value.findIndex((task) => task.id === currTask.value.id);
+
+        if (taskIdx !== -1) {
+          const plan = TaskList.value[taskIdx].plans[planIdx];
+
+          if (plan) {
+            if (plan.completedPomodoro) {
+              plan.completedPomodoro++;
+            } else {
+              plan.completedPomodoro = 1;
+            }
+          }
+        }
+      }
+    }
+
+    // 确保 currTaskCompletedPomodoro 和 currTaskCompletedPomodoro.value 不为 undefined
+    if (currTaskCompletedPomodoro.value !== undefined) {
+      currTaskCompletedPomodoro.value++;
+    }
   }
 
   return { TaskList, currTaskCompletedPomodoro, currTask, completePomodoro, updateTask, removeTask };

@@ -17,19 +17,23 @@
       <button
         type="button"
         class="py-2 px-4 min-w-40 rounded-lg bg-gray-100"
-        @click="toggleTimer"
+        @click="toggleTimer('running')"
         v-if="pomodoro.timerStatus !== 'running'"
       >
         Start
       </button>
       <div v-else class="*:cursor-pointer">
-        <span class="material-symbols-outlined icon-fill text-gray-100 text-5xl leading-none me-4" @click="toggleTimer">
+        <span
+          class="material-symbols-outlined icon-fill text-gray-100 text-5xl leading-none me-4"
+          @click="toggleTimer('paused')"
+        >
           pause
         </span>
         <span class="material-symbols-outlined icon-fill text-gray-100 text-5xl leading-none" @click="finishTimer()">
           skip_next
         </span>
       </div>
+      {{ useTask.currTaskCompletedPomodoro }}
     </div>
   </div>
 </template>
@@ -78,47 +82,39 @@ const formatWorkStatue = computed(() => {
 });
 // active/pause timer
 const runTimer = () => {
-  let tickTimeout: NodeJS.Timeout | null = null;
-
   if (useSetting.settingConfig.sound.enable_tickSound) {
-    tickTimeout = setTimeout(() => {
-      useAudio('ticking', audio);
-      if (tickTimeout) {
-        clearTimeout(tickTimeout);
-        tickTimeout = null;
-      }
-    }, 1000);
+    useAudio('ticking', audio);
   }
 
-  const timerInterval = setInterval(() => {
+  timer = setInterval(() => {
     pomodoro.value.remainingTime--;
-    // 如果剩余时间为 0，清除定时器
-    if (pomodoro.value.remainingTime <= 0) {
-      clearInterval(timerInterval);
-    }
   }, 1000);
 };
 
 const stopTimer = () => clearInterval(timer);
 
-const toggleTimer = (): void => {
-  audio.src = '';
-  useAudio('button', audio); // click effect
-  pomodoro.value.timerStatus = pomodoro.value.timerStatus !== 'running' ? 'running' : 'paused';
+const toggleTimer = (status: 'running' | 'paused'): void => {
+  audio.pause();
+  useAudio('button'); // click effect
+  pomodoro.value.timerStatus = status;
   if (pomodoro.value.timerStatus === 'running') runTimer();
   else stopTimer();
 };
 
 // timer logic
 const finishTimer = (isSkip: boolean = false) => {
-  // 先暫停計時器
   audio.pause();
   stopTimer();
   pomodoro.value.timerStatus = 'stopped';
 
   if (pomodoro.value.workStatus === 'pomodoroTime') {
     currPomodoroCount.value++;
-    useTask.completePomodoro();
+
+    if (useTask.TaskList.length) {
+      useTask.completePomodoro();
+    }
+    // otherwise add pomodoroCount to currPlan pomodoroCount
+    // if has no plans then add to currTask pomodoroCount
     const status =
       currPomodoroCount.value % useSetting.settingConfig.timer.longBreakInterval ? 'shortBreak' : 'longBreak';
     pomodoro.value.workStatus = status;

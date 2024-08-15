@@ -373,7 +373,7 @@ const buildTask = () => {
 
   const task: Task = {
     id: getUId('task'),
-    title: task_title.value,
+    title: taskTitle.value,
     totalPomodoro: pomodoroCount,
     notes: notes.value ?? '',
     plans: newPlans.value[0].content.trim() !== '' ? [...newPlans.value] : [],
