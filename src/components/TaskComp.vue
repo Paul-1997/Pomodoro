@@ -31,7 +31,15 @@
           />
           <div class="flex items-center mb-3">
             <p>番茄鐘數量 :</p>
-            <input type="number" class="ms-2 input-field w-16 bg-zinc-200" min="0" max="99" step="1" value="1" />
+            <input
+              type="number"
+              class="ms-2 input-field w-16 bg-zinc-200"
+              min="0"
+              max="99"
+              step="1"
+              :value="newTaskPomodoroCount"
+              @change="updateTaskPomodoroCount($event)"
+            />
           </div>
           <div class="input__extra mb-5">
             <button type="button" role="button" v-if="!onAddNote" @click="addNote" class="btn bg-violet-500 me-3">
@@ -127,11 +135,7 @@
         </div>
       </div>
     </div>
-    {{ currEditTask }}
-    <ul class="task__list bg-white bg-opacity-75 rounded px-1" v-if="useTask.TaskList.length">
-      {{
-        useTask.TaskList
-      }}
+    <ul class="task__list bg-white/25 p-3" v-if="useTask.TaskList.length">
       <li v-for="task in useTask.TaskList" :key="task.id" class="pb-1 space-y-2">
         <div class="relative" v-if="currEditTask.id !== task.id">
           <div class="grid grid-cols-[48px_1fr_80px_28px] items-center bg-white py-4 rounded">
@@ -151,18 +155,27 @@
           </div>
           <!-- plans -->
           <div class="bg-white bg-opacity-70 mx-0.5 rounded-b h-0 overflow-hidden" :class="task.isOpen ? 'h-auto' : ''">
-            <ol v-if="task.plans?.length">
-              <li
-                v-for="plan in task.plans"
-                :key="plan.id"
-                class="grid grid-cols-[48px_1fr_60px] items-center border-b border-zinc-400 mx-2 mb-3"
-              >
-                <input type="checkbox" v-model="plan.isCheck" />
-                <p class="text-xl">hi</p>
-                <span>{{ plan.completedPomodoro ?? 0 }} /{{ plan.pomodoro }}</span>
-              </li>
-            </ol>
-            <div class="px-4 py-2 mt-3 flex items-center justify-between border-t">
+            <div class="m-3" v-if="task.notes !== ''">
+              <h4 class="text-lg font-semibold mb-1">註記</h4>
+              <p class="py-2 ps-3 bg-gray-300/40 rounded text-gray-600">{{ task.notes }}</p>
+            </div>
+            <div v-if="task.plans?.length" class="py-2">
+              <h4 class="text-lg font-semibold mb-1 ms-3">計畫</h4>
+              <ol>
+                <li
+                  v-for="plan in task.plans"
+                  :key="plan.id"
+                  class="grid grid-cols-[60px_60px_1fr] items-center bg-gray-50 mx-2 mb-3 py-2 ring ring-stone-300 rounded"
+                >
+                  <input type="checkbox" v-model="plan.isCheck" class="size-5 mx-3" />
+                  <span class="align-middle text-gray-500"
+                    >{{ plan.completedPomodoro ?? 0 }} / {{ plan.pomodoro }}</span
+                  >
+                  <p class="text-lg">{{ plan.content }}</p>
+                </li>
+              </ol>
+            </div>
+            <div class="px-4 py-2 flex items-center justify-between border-t">
               <button
                 type="button"
                 class="btn py-1 bg-red-600 hover:bg-red-700 px-5"
@@ -170,13 +183,22 @@
               >
                 刪除
               </button>
-              <button
-                type="button"
-                class="btn py-1 border-zinc-600 border text-zinc-600 hover:bg-zinc-600 hover:text-white transition-colors px-5"
-                @click="currEditTask = JSON.parse(JSON.stringify(task))"
-              >
-                編輯
-              </button>
+              <div>
+                <button
+                  type="button"
+                  class="btn py-1 bg-zinc-500 hover:bg-zinc-600 text-white transition-colors px-5 me-2"
+                  @click="task.isOpen = false"
+                >
+                  關閉
+                </button>
+                <button
+                  type="button"
+                  class="btn py-1 border-zinc-600 border text-zinc-600 hover:bg-zinc-600 hover:text-white transition-colors px-5"
+                  @click="currEditTask = JSON.parse(JSON.stringify(task))"
+                >
+                  編輯
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -324,7 +346,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { computed, ref, watch, type InputHTMLAttributes } from 'vue';
 import useTaskStore from '@/stores/task.ts';
 import useSettingsStore from '@/stores/setting.ts';
 import type { Plan, Task } from '@/interface/task';
@@ -344,37 +366,46 @@ const addPlan = () => (onAddPlan.value = true);
 // add task
 const taskTitle = ref('');
 const notes = ref('');
+const taskPomodoro = ref(0);
 const newPlans = ref([
   {
     content: '',
     pomodoro: 1,
     id: getUId(),
-    plans: [{ content: '', pomodoroCount: 1, id: getUId() }],
   },
 ]);
+const newTaskPomodoroCount = computed(() => {
+  if (newPlans.value && onAddPlan.value) {
+    const total = newPlans.value.reduce((sum, { pomodoro }) => sum + pomodoro, 0);
+    return total > taskPomodoro.value ? total : taskPomodoro.value;
+  }
+  return taskPomodoro.value;
+});
 
 // task > plan
-const pomodoroCount = 1;
 const addNewPlan = (target: Plan[]) => target.push({ content: '', id: getUId(), pomodoro: 1 });
 const deletePlan = (id: string) => (newPlans.value = newPlans.value.filter((plan: { id: string }) => plan.id !== id));
+function updateTaskPomodoroCount(event: Event) {
+  const { value } = event.target as InputHTMLAttributes;
+  taskPomodoro.value = value;
+}
 function closeAddTask() {
   onAddTask.value = false;
   onAddNote.value = false;
   onAddPlan.value = false;
   // clear data
   taskTitle.value = '';
+  taskPomodoro.value = 0;
   notes.value = '';
-  newPlans.value = [
-    { content: '', id: getUId(), pomodoro: 1, plans: [{ content: '', pomodoroCount: 1, id: getUId() }] },
-  ];
+  newPlans.value = [{ content: '', id: getUId(), pomodoro: 1 }];
 }
 const buildTask = () => {
-  if (pomodoroCount < 1) return false;
+  if (newTaskPomodoroCount.value < 1) return false;
 
   const task: Task = {
     id: getUId('task'),
     title: taskTitle.value,
-    totalPomodoro: pomodoroCount,
+    totalPomodoro: newTaskPomodoroCount.value,
     notes: notes.value ?? '',
     plans: newPlans.value[0].content.trim() !== '' ? [...newPlans.value] : [],
   };

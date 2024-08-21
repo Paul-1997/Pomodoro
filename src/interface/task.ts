@@ -13,6 +13,7 @@ export interface Task {
   title: string;
   id: string;
   totalPomodoro: number;
+  completedPomodoro?: number;
   notes?: string;
   plans?: Array<Plan> | [];
   isCompleted?: boolean;

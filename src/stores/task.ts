@@ -20,8 +20,6 @@ const useTaskStore = defineStore('taskStore', () => {
     } else {
       // autoCheck
       if (currTask.value) {
-        // if (currTask.value.id && settingConfig.task.enable_autoCheckTask) {
-        // }
         if (currTask.value.totalPomodoro - currTaskCompletedPomodoro.value === 0) {
           const idx = TaskList.value.findIndex((task) => task.id === currTask.value?.id);
           if (idx !== -1) {
@@ -39,32 +37,21 @@ const useTaskStore = defineStore('taskStore', () => {
   }
 
   function completePomodoro() {
-    // 确保 currTask 和 currTask.value 不为 undefined
-    if (currTask.value && TaskList.value.length && currTask.value.plans?.length) {
-      const planIdx = currTask.value.plans.findIndex((plan) => !plan.isCheck);
+    // 檢查當前事項下是否有未完成的計畫
+    const planIdx = currTask.value?.plans?.findIndex((plan) => !plan.isCheck);
+    // 取到當前項目的plan並增加番茄鐘
+    if (planIdx !== -1 && planIdx !== undefined) {
+      const taskIdx = TaskList.value.findIndex((task) => task.id === (currTask.value as Task).id);
 
-      // 确保 planIdx 和 taskIdx 的有效性
-      if (planIdx !== -1) {
-        const taskIdx = TaskList.value.findIndex((task) => task.id === currTask.value.id);
-
-        if (taskIdx !== -1) {
-          const plan = TaskList.value[taskIdx].plans[planIdx];
-
-          if (plan) {
-            if (plan.completedPomodoro) {
-              plan.completedPomodoro++;
-            } else {
-              plan.completedPomodoro = 1;
-            }
-          }
+      if (taskIdx !== -1 && taskIdx !== undefined) {
+        if (TaskList.value[taskIdx].plans) {
+          const currPlan = TaskList.value[taskIdx].plans[planIdx];
+          currPlan.completedPomodoro = currPlan.completedPomodoro ? currPlan.completedPomodoro + 1 : 1;
         }
       }
     }
-
-    // 确保 currTaskCompletedPomodoro 和 currTaskCompletedPomodoro.value 不为 undefined
-    if (currTaskCompletedPomodoro.value !== undefined) {
-      currTaskCompletedPomodoro.value++;
-    }
+    // 當前完成番茄鐘+1
+    currTaskCompletedPomodoro.value++;
   }
 
   return { TaskList, currTaskCompletedPomodoro, currTask, completePomodoro, updateTask, removeTask };

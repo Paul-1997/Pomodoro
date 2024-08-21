@@ -110,7 +110,7 @@ const finishTimer = (isSkip: boolean = false) => {
   if (pomodoro.value.workStatus === 'pomodoroTime') {
     currPomodoroCount.value++;
 
-    if (useTask.TaskList.length) {
+    if (useTask.TaskList.length && useTask.currTask?.id) {
       useTask.completePomodoro();
     }
     // otherwise add pomodoroCount to currPlan pomodoroCount
