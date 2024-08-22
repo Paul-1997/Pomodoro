@@ -5,12 +5,13 @@ const useIdxDB = async () => {
   const db = await openDB('pomodoroDB', 1, {
     upgrade(Db) {
       // task
-      const task = Db.createObjectStore('taskList', { keyPath: 'id' });
-      task.createIndex('titleIndex', 'title', { unique: false });
-      task.createIndex('idIndex', 'id', { unique: true });
-      task.createIndex('createAtIndex', 'createAt', { unique: false });
-      task.createIndex('updateAtIndex', 'updateAt', { unique: false });
-      task.createIndex('plansIndex', 'plans', { unique: false, multiEntry: true });
+      const task = Db.createObjectStore('taskList', { keyPath: 'id', autoIncrement: true });
+      // task.createIndex('titleIndex', 'title', { unique: false });
+      // task.createIndex('idIndex', 'id', { unique: true });
+      // task.createIndex('createAtIndex', 'createAt', { unique: false });
+      // task.createIndex('updateAtIndex', 'updateAt', { unique: false });
+      // task.createIndex('plansIndex', 'plans', { unique: false, multiEntry: true });
+      task.createIndex('currPosition', 'currIndex', { unique: false });
     },
   });
 
@@ -22,7 +23,8 @@ const useIdxDB = async () => {
 
   const getAllData = async (): Promise<Task[]> => {
     if (!db) throw new Error('Database not initialized');
-    const result = await db.getAll('taskList');
+    const result = await db.getAllFromIndex('taskList', 'currPosition');
+
     return result;
   };
 
@@ -35,7 +37,6 @@ const useIdxDB = async () => {
     if (!db) throw new Error('Database not initialized');
     await db.put('taskList', data);
   };
-
   // Return methods for usage
   return {
     getDataById,

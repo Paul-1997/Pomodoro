@@ -18,6 +18,7 @@ export interface Task {
   plans?: Array<Plan> | [];
   isCompleted?: boolean;
   isOpen?: boolean;
+  currIndex?: number;
 }
 
 // for timer

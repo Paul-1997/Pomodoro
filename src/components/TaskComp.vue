@@ -148,7 +148,7 @@
               @change="completeTask(task)"
               class="block size-5 ms-3 accent-green-600"
             />
-            <p class="text-2xl">{{ task.title }}</p>
+            <p class="text-2xl">{{ task.title }} // {{ task.currIndex }}</p>
             <span class="text-xl text-gray-400">{{ useTask.currTaskCompletedPomodoro }} /{{ task.totalPomodoro }}</span>
             <div class="absolute end-0 me-4 mt-2">
               <button type="button" @click="openTaskDetail(task)">
