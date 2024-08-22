@@ -37,7 +37,7 @@
               min="0"
               max="99"
               step="1"
-              :value="newTaskPomodoroCount"
+              :value="taskPomodoroCount"
               @change="updateTaskPomodoroCount($event)"
             />
           </div>
@@ -57,7 +57,7 @@
               + 計畫
             </button>
             <div v-else class="mt-4">
-              <h3 class="text-xl font-semibold" title="your plans">Plans</h3>
+              <h3 class="text-xl font-semibold" title="your plans">計畫</h3>
               <ul class="mb-8">
                 <li v-for="(plan, index) in newPlans" :key="plan.id">
                   <div class="flex gap-3 mb-3 items-end">
@@ -73,7 +73,7 @@
                         :for="`newPlan-content${index + 1}`"
                         class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
                       >
-                        Plan Content
+                        計畫內容
                         <br />
                       </label>
                     </div>
@@ -89,13 +89,16 @@
                         :for="`newPlan-pomodoro${index + 1}`"
                         class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
                       >
-                        Pomodoro
+                        番茄鐘數量
                       </label>
                     </div>
                     <a href="#" class="hover:-translate-y-0.5" role="button" @click.prevent="deletePlan(plan.id)">
                       <span class="material-symbols-outlined text-gray-400">delete</span>
                     </a>
                   </div>
+                  <p class="indent-2 text-red-500 text-sm" v-if="!plan.content.trim() && onCheckAddError">
+                    <span class="material-symbols-outlined text-sm align-middle me-0.5"> error </span>計畫內容不得為空
+                  </p>
                 </li>
               </ul>
               <button
@@ -148,7 +151,7 @@
             <p class="text-2xl">{{ task.title }}</p>
             <span class="text-xl text-gray-400">{{ useTask.currTaskCompletedPomodoro }} /{{ task.totalPomodoro }}</span>
             <div class="absolute end-0 me-4 mt-2">
-              <button type="button" @click="task.isOpen = !task.isOpen">
+              <button type="button" @click="openTaskDetail(task)">
                 <span class="material-symbols-outlined"> more_vert </span>
               </button>
             </div>
@@ -219,7 +222,8 @@
                   min="0"
                   max="99"
                   step="1"
-                  v-model="currEditTask.totalPomodoro"
+                  :value="taskPomodoroCount"
+                  @change="updateTaskPomodoroCount($event)"
                 />
               </div>
               <div class="input__extra mb-5">
@@ -251,10 +255,10 @@
                   + 計畫
                 </button>
                 <div v-else class="mt-4">
-                  <h3 class="text-xl font-semibold" title="your plans">Plans</h3>
+                  <h3 class="text-xl font-semibold mb-1" title="your plans">計畫</h3>
                   <ul class="mb-8">
-                    <li v-for="(plan, index) in currEditTask.plans" :key="plan.id">
-                      <div class="flex gap-3 mb-3 items-end">
+                    <li v-for="(plan, index) in currEditTask.plans" :key="plan.id" class="mb-3">
+                      <div class="flex gap-3 items-end mb-1">
                         <div class="relative grow">
                           <input
                             v-model="plan.content"
@@ -267,7 +271,7 @@
                             :for="`newPlan-content${index + 1}`"
                             class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
                           >
-                            Plan Content
+                            計畫內容
                             <br />
                           </label>
                         </div>
@@ -283,13 +287,17 @@
                             :for="`newPlan-pomodoro${index + 1}`"
                             class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
                           >
-                            Pomodoro
+                            番茄鐘數量
                           </label>
                         </div>
                         <a href="#" class="hover:-translate-y-0.5" role="button" @click.prevent="deletePlan(plan.id)">
                           <span class="material-symbols-outlined text-gray-400">delete</span>
                         </a>
                       </div>
+                      <p class="indent-2 text-red-500 text-sm" v-if="!plan.content.trim() && onCheckEditError">
+                        <span class="material-symbols-outlined text-sm align-middle me-0.5"> error </span
+                        >計畫內容不得為空
+                      </p>
                     </li>
                   </ul>
                   <button
@@ -346,7 +354,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, ref, watch, type InputHTMLAttributes } from 'vue';
+import { computed, onMounted, ref, watch, type InputHTMLAttributes } from 'vue';
 import useTaskStore from '@/stores/task.ts';
 import useSettingsStore from '@/stores/setting.ts';
 import type { Plan, Task } from '@/interface/task';
@@ -359,10 +367,17 @@ const useTask = useTaskStore();
 const onAddTask = ref(false);
 const onAddNote = ref(false);
 const onAddPlan = ref(false);
-const addTask = () => (onAddTask.value = true);
+const addTask = () => {
+  onAddTask.value = true;
+  useTask.TaskList.forEach((task) => {
+    const target = task;
+    if (task.isOpen) target.isOpen = false;
+  });
+};
 const addNote = () => (onAddNote.value = true);
 const addPlan = () => (onAddPlan.value = true);
-
+const onCheckAddError = ref(false);
+const onCheckEditError = ref(false);
 // add task
 const taskTitle = ref('');
 const notes = ref('');
@@ -374,20 +389,67 @@ const newPlans = ref([
     id: getUId(),
   },
 ]);
-const newTaskPomodoroCount = computed(() => {
-  if (newPlans.value && onAddPlan.value) {
+// edit
+const currEditTask = ref<Task>({ id: '', title: '', totalPomodoro: 0 });
+const showEditNotes = ref(false);
+const showEditPlans = ref(false);
+const isAreaEmpty = () => (showEditNotes.value = !!currEditTask.value.notes);
+
+const taskPomodoroCount = computed(() => {
+  // add
+  if (newPlans.value && onAddTask.value) {
     const total = newPlans.value.reduce((sum, { pomodoro }) => sum + pomodoro, 0);
     return total > taskPomodoro.value ? total : taskPomodoro.value;
   }
+  // edit
+  if (currEditTask.value.id !== '') {
+    if (currEditTask.value.plans?.length) {
+      const total = currEditTask.value.plans?.reduce((sum, { pomodoro }) => sum + pomodoro, 0);
+      return total > currEditTask.value.totalPomodoro ? total : currEditTask.value.totalPomodoro;
+    }
+    return currEditTask.value.totalPomodoro;
+  }
   return taskPomodoro.value;
 });
-
-// task > plan
-const addNewPlan = (target: Plan[]) => target.push({ content: '', id: getUId(), pomodoro: 1 });
-const deletePlan = (id: string) => (newPlans.value = newPlans.value.filter((plan: { id: string }) => plan.id !== id));
 function updateTaskPomodoroCount(event: Event) {
   const { value } = event.target as InputHTMLAttributes;
-  taskPomodoro.value = value;
+  if (currEditTask.value.id) {
+    currEditTask.value.totalPomodoro = value;
+  } else taskPomodoro.value = value;
+}
+
+function checkError(): Boolean {
+  // addNewPlan
+  if (onAddTask.value === true) {
+    if (newPlans.value.some((plan) => plan.content.trim() === '') && onAddPlan.value === true) {
+      onCheckAddError.value = true;
+      return false;
+    }
+  }
+  // editingPlan
+  if (currEditTask.value.plans?.length) {
+    const isPlanTitleEmpty = currEditTask.value.plans?.some((plan) => plan.content.trim() === '');
+    if (isPlanTitleEmpty) {
+      onCheckEditError.value = true;
+      return false;
+    }
+  }
+  return true;
+}
+// action
+function openTaskDetail(target: Task) {
+  const openedTarget = useTask.TaskList.find((task) => task.isOpen === true);
+  if (openedTarget && openedTarget.id === target.id) openedTarget.isOpen = false;
+  else {
+    useTask.TaskList.forEach((task) => {
+      const item = task;
+      if (task.id === target.id) item.isOpen = true;
+      else item.isOpen = false;
+    });
+  }
+}
+function cancelEdit() {
+  currEditTask.value = { id: '', title: '', totalPomodoro: 0 };
 }
 function closeAddTask() {
   onAddTask.value = false;
@@ -399,41 +461,43 @@ function closeAddTask() {
   notes.value = '';
   newPlans.value = [{ content: '', id: getUId(), pomodoro: 1 }];
 }
-const buildTask = () => {
-  if (newTaskPomodoroCount.value < 1) return false;
-
-  const task: Task = {
-    id: getUId('task'),
-    title: taskTitle.value,
-    totalPomodoro: newTaskPomodoroCount.value,
-    notes: notes.value ?? '',
-    plans: newPlans.value[0].content.trim() !== '' ? [...newPlans.value] : [],
-  };
-  useTask.updateTask(task, true);
-  closeAddTask();
-  return true;
+const addNewPlan = (target: Plan[]) => target.push({ content: '', id: getUId(), pomodoro: 1 });
+const deletePlan = (id: string) => {
+  if (currEditTask.value.id !== '' && currEditTask.value.plans?.length) {
+    currEditTask.value.plans = currEditTask.value.plans.filter((plan) => plan.id !== id);
+  } else newPlans.value = newPlans.value.filter((plan: { id: string }) => plan.id !== id);
 };
-
+const editTask = () => {
+  if (checkError()) {
+    if (taskPomodoroCount.value > currEditTask.value.totalPomodoro) {
+      currEditTask.value.totalPomodoro = taskPomodoroCount.value;
+    }
+    currEditTask.value.isOpen = false;
+    useTask.updateTask(currEditTask.value);
+    // reset statue
+    showEditNotes.value = false;
+    showEditPlans.value = false;
+    currEditTask.value = { id: '', title: '', totalPomodoro: 0 };
+    taskPomodoro.value = 0;
+  }
+};
+const buildTask = () => {
+  if (checkError() && taskPomodoroCount.value > 0) {
+    const task: Task = {
+      id: getUId('task'),
+      title: taskTitle.value,
+      totalPomodoro: taskPomodoroCount.value,
+      notes: notes.value ?? '',
+      plans: newPlans.value[0].content.trim() !== '' ? [...newPlans.value] : [],
+    };
+    useTask.updateTask(task, true);
+    closeAddTask();
+  }
+};
 const completeTask = (task: Task) => {
   // removeWhenCompleted
   if (useSetting.settingConfig.task.enable_autoRemoveCompleted && task.isCompleted) useTask.removeTask(task.id);
 };
-
-// edit
-const currEditTask = ref<Task>({ id: '', title: '', totalPomodoro: 0 });
-const showEditNotes = ref(false);
-const showEditPlans = ref(false);
-const isAreaEmpty = () => (showEditNotes.value = !!currEditTask.value.notes);
-
-const editTask = () => {
-  currEditTask.value.isOpen = false;
-  useTask.updateTask(currEditTask.value);
-  // reset statue
-  showEditNotes.value = false;
-  showEditPlans.value = false;
-  currEditTask.value = { id: '', title: '', totalPomodoro: 0 };
-};
-const cancelEdit = () => (currEditTask.value = { id: '', title: '', totalPomodoro: 0 });
 
 // reset if empty
 watch(newPlans, () => {
@@ -446,6 +510,12 @@ watch(newPlans, () => {
         id: getUId(),
       },
     ];
+  }
+});
+
+onMounted(() => {
+  if (useTask.currTask) {
+    openTaskDetail(useTask.currTask);
   }
 });
 </script>
