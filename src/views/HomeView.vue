@@ -10,6 +10,7 @@
 
     <Setting v-model:isShow="showModal" v-if="currModal === 'settings'" />
     <Manual v-model:isShow="showModal" v-if="currModal === 'manual'" />
+    <Status v-model:isShow="showModal" v-if="currModal === 'status'" />
   </main>
   <Footer />
 </template>
@@ -23,6 +24,7 @@ import Footer from '../components/FooterComp.vue';
 import Task from '../components/TaskComp.vue';
 import Setting from '../components/dialog/SettingDialog.vue';
 import Manual from '../components/dialog/ManualDialog.vue';
+import Status from '../components/dialog/StatusDialog.vue';
 
 const useSetting = useSettingsStore();
 // dialog

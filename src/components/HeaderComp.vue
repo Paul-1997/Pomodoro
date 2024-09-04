@@ -21,11 +21,6 @@
           <span class="material-symbols-outlined text-white"> help </span>
         </button>
       </li>
-      <li>
-        <RouterLink to="/state" class="text-3xl bg-white bg-clip-text text-transparent font-bold leading-tight">
-          <span class="material-symbols-outlined text-blue"> help </span>
-        </RouterLink>
-      </li>
     </ul>
   </nav>
 </template>

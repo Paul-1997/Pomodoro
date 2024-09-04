@@ -7,14 +7,14 @@ export default function useAudio(type: string, audio: HTMLAudioElement | null = 
     const { settingConfig } = useSettingsStore();
     const fileName = type !== 'alarm' ? settingConfig.sound.tickFileName : settingConfig.sound.alarmFileName;
     const volume = type === 'tick' ? settingConfig.sound.tickVolume : settingConfig.sound.alarmVolume;
-    audio.src = `src/assets/audio/${type !== 'alarm' ? 'ticking' : 'alarm'}/${fileName}.mp3`;
+    audio.src = `/Pomodoro/audio/${type !== 'alarm' ? 'ticking' : 'alarm'}/${fileName}.mp3`;
     audio.volume = volume / 100;
     if (type === 'ticking') audio.loop = true;
     audio.play();
   } else if (type === 'button') {
     // button or autoStart sound effect
     const clickSound = new Audio();
-    clickSound.src = 'src/assets/audio/buttonClick.mp3';
+    clickSound.src = `/Pomodoro/audio/buttonClick.mp3`;
     clickSound.volume = 1;
     clickSound.play();
   }

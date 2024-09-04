@@ -3,15 +3,24 @@
     <div class="w-fit mb-8 mx-auto py-3 px-10 rounded-lg bg-black bg-opacity-25 text-gray-200 text-3xl">
       {{ formatWorkStatue }}
     </div>
-    <div class="pomodoro__timer relative mx-auto rounded-full bg-white size-[300px] mb-10">
-      <div
-        class="size-[260px] rounded-full absolute inset-5 grid place-content-center transition-colors duration-1000"
-        :style="{
-          'background-color': props.currBg,
-        }"
-      >
-        <span class="text-7xl">{{ getFormatRemainTime }}</span>
-      </div>
+    <div class="pomodoro__timer relative size-[300px] mx-auto mb-10">
+      <svg width="300" height="300" viewbox="0 0 300 300" class="-rotate-90">
+        <circle cx="150" cy="150" r="140" stroke-width="20" stroke="#fff" fill="none"></circle>
+        <circle
+          cx="150"
+          cy="150"
+          r="140"
+          stroke-width="20"
+          :stroke="props.currBg"
+          fill="none"
+          :stroke-dasharray="svgCircle"
+          :stroke-dashoffset="svgCircle - countDownProgress"
+          style="transition: stroke-dashoffset 1s ease"
+        ></circle>
+      </svg>
+      <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl font-bold leading-none">
+        {{ getFormatRemainTime }}
+      </span>
     </div>
     <div class="pomodoro__buttons w-fit mx-auto">
       <button
@@ -33,7 +42,6 @@
           skip_next
         </span>
       </div>
-      {{ useTask.currTaskCompletedPomodoro }}
     </div>
   </div>
 </template>
@@ -62,7 +70,7 @@ const audio: HTMLAudioElement = new Audio();
 const playAudio = (type: string) => useAudio(type, audio);
 // pomodoro
 const pomodoro = ref<Pomodoro>({
-  remainingTime: useSetting.settingConfig.timer.pomodoroTime - 20,
+  remainingTime: useSetting.settingConfig.timer.pomodoroTime * 60,
   workStatus: 'pomodoroTime',
   timerStatus: 'stopped',
 });
@@ -102,6 +110,17 @@ const toggleTimer = (status: 'running' | 'paused'): void => {
 };
 
 // timer logic
+const setProgressPercent = () => {
+  const { remainingTime, workStatus } = pomodoro.value;
+  const { timer: Timer } = useSetting.settingConfig;
+  const percent = remainingTime / (Timer[workStatus] * 60);
+  return percent;
+};
+const svgCircle = 2 * Math.PI * 140; // svg圓周長
+const countDownProgress = computed(() => {
+  const remain = setProgressPercent() * svgCircle;
+  return svgCircle - remain;
+});
 const finishTimer = (isSkip: boolean = false) => {
   audio.pause();
   stopTimer();

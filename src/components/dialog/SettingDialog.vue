@@ -180,6 +180,7 @@
                 </li>
               </ol>
             </li>
+            <!-- 施工中⛏️⛏️⛏️
             <li class="flex items-center justify-between">
               <label class="me-2">Language</label>
               <select class="input-field w-full max-w-48" v-model="useSetting.settingConfig.theme.language">
@@ -187,6 +188,7 @@
                 <option value="en">English</option>
               </select>
             </li>
+            -->
             <li class="flex items-center justify-between">
               <label>Time Zone</label>
               <select class="input-field w-full max-w-48" v-model="useSetting.settingConfig.theme.timeZone">
