@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "node",
+    "jsx": "preserve"
+  },
+  "include": [".eslintrc.cjs", "src/**/*","tailwind.config.js","postcss.config.js","vite.config.ts","vitest.config.ts"],
+}

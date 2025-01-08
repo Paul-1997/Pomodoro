@@ -148,7 +148,7 @@
               @change="completeTask(task)"
               class="block size-5 ms-3 accent-green-600"
             />
-            <p class="text-2xl">{{ task.title }} // {{ task.currIndex }}</p>
+            <p class="text-2xl">{{ task.title }} {{ task.currIndex }}</p>
             <span class="text-xl text-gray-400">{{ useTask.currTaskCompletedPomodoro }} /{{ task.totalPomodoro }}</span>
             <div class="absolute end-0 me-4 mt-2">
               <button type="button" @click="openTaskDetail(task)">
@@ -355,10 +355,10 @@
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch, type InputHTMLAttributes } from 'vue';
-import useTaskStore from '@/stores/task.ts';
-import useSettingsStore from '@/stores/setting.ts';
+import useTaskStore from '@/stores/task';
+import useSettingsStore from '@/stores/setting';
 import type { Plan, Task } from '@/interface/task';
-import getUId from '../composable/getUniqueId.ts';
+import getUId from '../composable/getUniqueId';
 
 // store
 const useSetting = useSettingsStore();

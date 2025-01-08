@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
-import useIdxDB from '@/composable/useIdxDb.ts';
-import useSettingsStore from './setting.ts';
+import useIdxDB from '@/composable/useIdxDb';
+import useSettingsStore from './setting';
 import type { Task } from '../interface/task';
 
 const useTaskStore = defineStore('taskStore', () => {
@@ -15,7 +15,7 @@ const useTaskStore = defineStore('taskStore', () => {
       const request = await db.getAllData();
       TaskList.value = [...request];
     } catch (err) {
-      console.log('something wrong!!');
+      // console.log('something wrong!!');
     }
   }
 
@@ -29,26 +29,26 @@ const useTaskStore = defineStore('taskStore', () => {
       if (!serializedTask.currIndex || serializedTask.currIndex > -1) serializedTask.currIndex = currIndex;
       await db.putData(serializedTask);
     } catch (err) {
-      alert('暫存資料發生錯誤了🥺');
-      console.log(err);
+      // alert('暫存資料發生錯誤了🥺');
+      // console.log(err);
     }
   }
   async function deleteIdbTask(id: string) {
     try {
       const db = await useIdxDB();
       await db.deleteDataById(id);
-      console.log('nice bro');
+      // console.log('nice bro');
     } catch (err) {
-      alert('刪除暫存資料發生錯誤了');
-      console.log(err);
+      // alert('刪除暫存資料發生錯誤了');
+      // console.log(err);
     }
   }
 
   function updateTask(target: Task, isNew: boolean = false) {
     const { settingConfig } = useSettingsStore();
     // 因應Idb所以要先把負數過濾掉才會是正確的
-    const idx = TaskList.value.filter((tk) => tk.currIndex! > -1).findIndex((item) => item.id === target.id);
-    let currIndex = idx === -1 ? TaskList.value.length : idx;
+    const index = TaskList.value.filter((tk) => tk.currIndex! > -1).findIndex((item) => item.id === target.id);
+    let currIndex = index === -1 ? TaskList.value.length : index;
     // newTaskToTop
     if (isNew) {
       if (settingConfig.task.enable_newTaskToTop) {

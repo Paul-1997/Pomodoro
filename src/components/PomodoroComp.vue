@@ -47,10 +47,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
-import useSettingsStore from '@/stores/setting.ts';
-import useTaskStore from '@/stores/task.ts';
-import useAudio from '@/composable/useAudio.ts';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import useSettingsStore from '@/stores/setting';
+import useTaskStore from '@/stores/task';
+import useAudio from '@/composable/useAudio';
 import type { Pomodoro } from '@/interface/pomodoro';
 
 const useSetting = useSettingsStore();
@@ -63,11 +63,6 @@ const props = defineProps({
 });
 const emit = defineEmits(['updateWorkStatue']);
 
-// timer
-let timer: number | NodeJS.Timeout;
-// audio
-const audio: HTMLAudioElement = new Audio();
-const playAudio = (type: string) => useAudio(type, audio);
 // pomodoro
 const pomodoro = ref<Pomodoro>({
   remainingTime: useSetting.settingConfig.timer.pomodoroTime * 60,
@@ -88,18 +83,37 @@ const formatWorkStatue = computed(() => {
   if (pomodoro.value.workStatus === 'pomodoroTime') return 'Work';
   return pomodoro.value.workStatus === 'shortBreak' ? 'short break' : 'long break';
 });
+
+// timer
+let timer: Worker;
+
+onMounted(() => {
+  timer = new Worker(new URL('@/Workers/timer.ts', import.meta.url));
+  timer.onmessage = (e) => {
+    pomodoro.value.remainingTime -= e.data;
+    document.title = `${getFormatRemainTime.value} - Pomodoro Focus!`;
+  };
+});
+onUnmounted(() => {
+  timer.terminate();
+});
+// audio
+const audio: HTMLAudioElement = new Audio();
+const playAudio = (type: string) => useAudio(type, audio);
+
 // active/pause timer
 const runTimer = () => {
   if (useSetting.settingConfig.sound.enable_tickSound) {
     useAudio('ticking', audio);
   }
 
-  timer = setInterval(() => {
-    pomodoro.value.remainingTime--;
-  }, 1000);
+  timer.postMessage({
+    action: 'start',
+    seconds: pomodoro.value.remainingTime,
+  });
 };
 
-const stopTimer = () => clearInterval(timer);
+const stopTimer = () => timer.postMessage({ action: 'stop' });
 
 const toggleTimer = (status: 'running' | 'paused'): void => {
   audio.pause();
@@ -122,8 +136,8 @@ const countDownProgress = computed(() => {
   return svgCircle - remain;
 });
 const finishTimer = (isSkip: boolean = false) => {
-  audio.pause();
   stopTimer();
+  // audio.pause();
   pomodoro.value.timerStatus = 'stopped';
 
   if (pomodoro.value.workStatus === 'pomodoroTime') {

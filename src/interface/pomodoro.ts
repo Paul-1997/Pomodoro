@@ -1,4 +1,4 @@
-import type { currTask } from './task';
+import type { CurrTask } from './task';
 
 export type WorkStatus = 'pomodoroTime' | 'shortBreak' | 'longBreak';
 
@@ -8,5 +8,5 @@ export interface Pomodoro {
   remainingTime: number;
   workStatus: WorkStatus;
   timerStatus: TimerStatus;
-  currentTask?: currTask;
+  currentTask?: CurrTask;
 }

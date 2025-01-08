@@ -3,11 +3,25 @@ module.exports = {
   root: true,
   extends: [
     'airbnb-base',
-    'plugin:vue/vue3-essential',
+    'airbnb-typescript/base',
     'eslint:recommended',
+    'plugin:vue/vue3-essential',
     '@vue/eslint-config-typescript',
     'plugin:prettier/recommended',
   ],
+  env: {
+    browser: true,
+    node: true,
+    es2021: true,
+  },
+  parserOptions: {
+    parser: '@typescript-eslint/parser',
+    project: './tsconfig.eslint.json',
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+  },
+
+  plugins: ['vue', '@typescript-eslint', 'prettier'],
   settings: {
     'import/resolver': {
       alias: {
@@ -17,11 +31,6 @@ module.exports = {
     },
     'import/core-modules': ['vite', '@vitejs/plugin-vue'],
   },
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-  },
-  plugins: ['vue'],
   rules: {
     'no-plusplus': 'off',
     'no-return-assign': 'off',
@@ -47,6 +56,15 @@ module.exports = {
       'error',
       {
         devDependencies: ['tailwind.config.js', '**/*.test.js'],
+      },
+    ],
+    // handle ts file extension
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        ts: 'never',
+        tsx: 'never',
       },
     ],
   },

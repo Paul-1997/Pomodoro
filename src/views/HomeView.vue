@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import Header from '@/components/HeaderComp.vue';
-import useSettingsStore from '@/stores/setting.ts';
+import useSettingsStore from '@/stores/setting';
 import Pomodoro from '../components/PomodoroComp.vue';
 import Footer from '../components/FooterComp.vue';
 import Task from '../components/TaskComp.vue';

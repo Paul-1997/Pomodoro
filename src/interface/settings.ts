@@ -1,4 +1,4 @@
-interface SettingConfig {
+export interface SettingConfig {
   timer: {
     pomodoroTime: number;
     shortBreak: number;

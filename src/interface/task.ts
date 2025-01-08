@@ -22,7 +22,7 @@ export interface Task {
 }
 
 // for timer
-export interface currTask extends Task {
+export interface CurrTask extends Task {
   currTotalPomodoro: number;
   currPlan: Plan;
 }

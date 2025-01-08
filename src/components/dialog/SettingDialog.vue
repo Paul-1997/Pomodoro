@@ -319,10 +319,10 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';
-import useSettingsStore from '@/stores/setting.ts';
-import useAudio from '@/composable/useAudio.ts';
-import { timezones, dateFormatType } from '@/assets/timeZone.ts';
-import { formatZone } from '@/composable/timeZone.ts';
+import useSettingsStore from '@/stores/setting';
+import useAudio from '@/composable/useAudio';
+import { timezones, dateFormatType } from '@/assets/timeZone';
+import { formatZone } from '@/composable/timeZone';
 import type { DialogProps } from '@/interface/dialog';
 import type { WorkStatus } from '@/interface/pomodoro';
 // init
