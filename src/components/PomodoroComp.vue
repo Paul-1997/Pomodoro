@@ -47,10 +47,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import useSettingsStore from '@/stores/setting';
 import useTaskStore from '@/stores/task';
 import useAudio from '@/composable/useAudio';
+import useTimer from '@/composable/useTimer';
 import type { Pomodoro } from '@/interface/pomodoro';
 
 const useSetting = useSettingsStore();
@@ -84,37 +85,21 @@ const formatWorkStatue = computed(() => {
   return pomodoro.value.workStatus === 'shortBreak' ? 'short break' : 'long break';
 });
 
-// timer
-let timer: Worker;
-
-onMounted(() => {
-  timer = new Worker(new URL('@/Workers/timer.ts', import.meta.url));
-  timer.onmessage = (e) => {
-    pomodoro.value.remainingTime -= e.data;
-    document.title = `${getFormatRemainTime.value} - Pomodoro Focus!`;
-  };
-});
-onUnmounted(() => {
-  timer.terminate();
-});
 // audio
 const audio: HTMLAudioElement = new Audio();
 const playAudio = (type: string) => useAudio(type, audio);
 
-// active/pause timer
+// timer
+const { startTimer, stopTimer } = useTimer((second: number) => {
+  pomodoro.value.remainingTime -= second;
+  document.title = `${getFormatRemainTime.value} - Pomodoro Focus!`;
+});
 const runTimer = () => {
   if (useSetting.settingConfig.sound.enable_tickSound) {
-    useAudio('ticking', audio);
+    playAudio('ticking');
   }
-
-  timer.postMessage({
-    action: 'start',
-    seconds: pomodoro.value.remainingTime,
-  });
+  startTimer(pomodoro.value.remainingTime);
 };
-
-const stopTimer = () => timer.postMessage({ action: 'stop' });
-
 const toggleTimer = (status: 'running' | 'paused'): void => {
   audio.pause();
   useAudio('button'); // click effect
