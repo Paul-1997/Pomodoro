@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import useSettingsStore from '@/stores/setting';
-// tick for setting one | ticking for pomodoro one
+
 export default function useAudio(type: string, audio: HTMLAudioElement | null = null) {
   if (audio) {
     audio.loop = false;

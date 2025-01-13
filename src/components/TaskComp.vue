@@ -358,7 +358,7 @@ import { computed, onMounted, ref, watch, type InputHTMLAttributes } from 'vue';
 import useTaskStore from '@/stores/task';
 import useSettingsStore from '@/stores/setting';
 import type { Plan, Task } from '@/interface/task';
-import getUId from '../composable/getUniqueId';
+import getUId from '../utils/getUniqueId';
 
 // store
 const useSetting = useSettingsStore();

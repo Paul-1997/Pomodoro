@@ -19,7 +19,7 @@
         ></circle>
       </svg>
       <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl font-bold leading-none">
-        {{ getFormatRemainTime }}
+        {{ getFormatRemainingTime }}
       </span>
     </div>
     <div class="pomodoro__buttons w-fit mx-auto">
@@ -34,11 +34,14 @@
       <div v-else class="*:cursor-pointer">
         <span
           class="material-symbols-outlined icon-fill text-gray-100 text-5xl leading-none me-4"
-          @click="toggleTimer('paused')"
+          @click="pauseTimer()"
         >
           pause
         </span>
-        <span class="material-symbols-outlined icon-fill text-gray-100 text-5xl leading-none" @click="finishTimer()">
+        <span
+          class="material-symbols-outlined icon-fill text-gray-100 text-5xl leading-none"
+          @click="finishTimer(true)"
+        >
           skip_next
         </span>
       </div>
@@ -65,14 +68,14 @@ const props = defineProps({
 const emit = defineEmits(['updateWorkStatue']);
 
 // pomodoro
+
 const pomodoro = ref<Pomodoro>({
   remainingTime: useSetting.settingConfig.timer.pomodoroTime * 60,
   workStatus: 'pomodoroTime',
   timerStatus: 'stopped',
 });
 const currPomodoroCount = ref(0);
-
-const getFormatRemainTime = computed((): string => {
+const getFormatRemainingTime = computed((): string => {
   const time = pomodoro.value.remainingTime;
   const m = Math.floor(time / 60)
     .toString()
@@ -92,13 +95,21 @@ const playAudio = (type: string) => useAudio(type, audio);
 // timer
 const { startTimer, stopTimer } = useTimer((second: number) => {
   pomodoro.value.remainingTime -= second;
-  document.title = `${getFormatRemainTime.value} - Pomodoro Focus!`;
+  document.title = `${getFormatRemainingTime.value} - Pomodoro Focus!`;
 });
 const runTimer = () => {
   if (useSetting.settingConfig.sound.enable_tickSound) {
     playAudio('ticking');
   }
   startTimer(pomodoro.value.remainingTime);
+};
+const pauseTimer = () => {
+  if (useSetting.settingConfig.sound.enable_tickSound) {
+    audio.pause();
+  }
+  useAudio('button'); // click effect
+  pomodoro.value.timerStatus = 'paused';
+  stopTimer();
 };
 const toggleTimer = (status: 'running' | 'paused'): void => {
   audio.pause();
@@ -122,7 +133,6 @@ const countDownProgress = computed(() => {
 });
 const finishTimer = (isSkip: boolean = false) => {
   stopTimer();
-  // audio.pause();
   pomodoro.value.timerStatus = 'stopped';
 
   if (pomodoro.value.workStatus === 'pomodoroTime') {
@@ -156,11 +166,12 @@ const finishTimer = (isSkip: boolean = false) => {
   }
 };
 
+// watch
 watch(
   () => pomodoro.value,
   () => {
     if (pomodoro.value.timerStatus !== 'running') stopTimer();
-    if (pomodoro.value.remainingTime < 1) {
+    if (pomodoro.value.remainingTime < 1 && useSetting.settingConfig.timer[pomodoro.value.workStatus] > 0) {
       playAudio('alarm');
       finishTimer();
     }
@@ -172,6 +183,14 @@ watch(
   (newVal) => {
     emit('updateWorkStatue', newVal);
   },
+);
+watch(
+  () => useSetting.settingConfig.timer,
+  () => {
+    if (pomodoro.value.timerStatus === 'running') stopTimer();
+    pomodoro.value.remainingTime = useSetting.settingConfig.timer[pomodoro.value.workStatus] * 60;
+  },
+  { deep: true },
 );
 </script>
 <style scoped>
