@@ -1,21 +1,33 @@
 /* eslint-disable no-param-reassign */
 import useSettingsStore from '@/stores/setting';
+import { handleError } from '@/utils/errorHandler';
 
 export default function useAudio(type: string, audio: HTMLAudioElement | null = null) {
   if (audio) {
     audio.loop = false;
     const { settingConfig } = useSettingsStore();
-    const fileName = type !== 'alarm' ? settingConfig.sound.tickFileName : settingConfig.sound.alarmFileName;
-    const volume = type === 'tick' ? settingConfig.sound.tickVolume : settingConfig.sound.alarmVolume;
-    audio.src = `/audio/${type !== 'alarm' ? 'ticking' : 'alarm'}/${fileName}.mp3`;
+    
+    // 根據實際類型決定文件名和音量
+    const isAlarm = type === 'alarm';
+    const fileName = isAlarm ? settingConfig.sound.alarmFileName : settingConfig.sound.tickFileName;
+    const volume = isAlarm ? settingConfig.sound.alarmVolume : settingConfig.sound.tickVolume;
+    
+    audio.src = `/audio/${isAlarm ? 'alarm' : 'ticking'}/${fileName}.mp3`;
     audio.volume = volume / 100;
-    if (type === 'ticking') audio.loop = true;
-    audio.play();
+    
+    if (type === 'ticking') {
+      audio.loop = true;
+    }
+    
+    audio.play().catch(err => {
+      handleError(err, 'Audio.play');
+    });
   } else if (type === 'button') {
-    // button or autoStart sound effect
     const clickSound = new Audio();
-    clickSound.src = `/audio/buttonClick.mp3`;
+    clickSound.src = '/audio/buttonClick.mp3';
     clickSound.volume = 1;
-    clickSound.play();
+    clickSound.play().catch(err => {
+      handleError(err, 'Audio.buttonClick');
+    });
   }
 }

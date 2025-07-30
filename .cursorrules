@@ -1,0 +1,75 @@
+# Cursor MCP Configuration for Pomodoro Project
+
+## Project Context
+This is a Vue 3 + TypeScript Pomodoro timer application with the following tech stack:
+- Vue 3 with Composition API
+- TypeScript
+- Vite
+- Pinia for state management
+- Vue Router
+- Tailwind CSS
+- Vitest for testing
+- IndexedDB for local storage
+
+## Code Style Guidelines
+- Use 2 spaces for indentation
+- Use single quotes for strings
+- Maximum line length: 150 characters
+- Use TypeScript strict mode
+- Prefer const over let when possible
+- Use descriptive variable and function names
+- Event handlers should start with 'handle' (e.g., handleTimerStart)
+- Use early returns to improve readability
+
+## Vue Component Guidelines
+- Use Composition API with `<script setup>`
+- Define proper TypeScript interfaces for props and emits
+- Use Tailwind CSS classes for styling, avoid inline styles
+- Implement proper accessibility features (aria-labels, tabindex, etc.)
+- Use Pinia stores for global state management
+- Keep components focused and single-responsibility
+
+## File Organization
+- Components in `src/components/`
+- Composables in `src/composable/`
+- Stores in `src/stores/`
+- Interfaces in `src/interface/`
+- Utils in `src/utils/`
+- Views in `src/views/`
+
+## Testing Guidelines
+- Write unit tests for all components and composables
+- Use Vue Test Utils for component testing
+- Aim for 80% test coverage
+- Test both success and error scenarios
+
+## Accessibility Requirements
+- Follow WCAG guidelines
+- Include proper ARIA labels
+- Ensure keyboard navigation works
+- Provide alternative text for images
+- Use semantic HTML elements
+
+## Performance Considerations
+- Use lazy loading for routes
+- Optimize bundle size
+- Implement proper memoization where needed
+- Use Web Workers for timer operations
+
+## Security Guidelines
+- Validate all user inputs
+- Sanitize data before storing in IndexedDB
+- Use environment variables for sensitive data
+- Implement proper error handling
+
+## Documentation
+- Use JSDoc for function documentation
+- Include README for each major component
+- Document complex business logic
+- Keep commit messages descriptive
+
+## Git Workflow
+- Use feature branches for new development
+- Create pull requests for code review
+- Write descriptive commit messages
+- Keep commits atomic and focused 

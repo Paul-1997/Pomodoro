@@ -354,7 +354,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch, type InputHTMLAttributes } from 'vue';
+import { computed, onMounted, ref, watch, type InputHTMLAttributes, type Ref } from 'vue';
 import useTaskStore from '@/stores/task';
 import useSettingsStore from '@/stores/setting';
 import type { Plan, Task } from '@/interface/task';
@@ -382,7 +382,7 @@ const onCheckEditError = ref(false);
 const taskTitle = ref('');
 const notes = ref('');
 const taskPomodoro = ref(0);
-const newPlans = ref([
+const newPlans: Ref<Plan[]> = ref([
   {
     content: '',
     pomodoro: 1,
@@ -390,7 +390,7 @@ const newPlans = ref([
   },
 ]);
 // edit
-const currEditTask = ref<Task>({ id: '', title: '', totalPomodoro: 0 });
+const currEditTask: Ref<Partial<Task>> = ref({});
 const showEditNotes = ref(false);
 const showEditPlans = ref(false);
 const isAreaEmpty = () => (showEditNotes.value = !!currEditTask.value.notes);
@@ -412,10 +412,10 @@ const taskPomodoroCount = computed(() => {
   return taskPomodoro.value;
 });
 function updateTaskPomodoroCount(event: Event) {
-  const { value } = event.target as InputHTMLAttributes;
+  const { value } = event.target as HTMLInputElement;
   if (currEditTask.value.id) {
-    currEditTask.value.totalPomodoro = value;
-  } else taskPomodoro.value = value;
+    currEditTask.value.totalPomodoro = Number(value);
+  } else taskPomodoro.value = Number(value);
 }
 
 function checkError(): Boolean {
@@ -449,7 +449,7 @@ function openTaskDetail(target: Task) {
   }
 }
 function cancelEdit() {
-  currEditTask.value = { id: '', title: '', totalPomodoro: 0 };
+  currEditTask.value = {};
 }
 function closeAddTask() {
   onAddTask.value = false;
@@ -469,15 +469,15 @@ const deletePlan = (id: string) => {
 };
 const editTask = () => {
   if (checkError()) {
-    if (taskPomodoroCount.value > currEditTask.value.totalPomodoro) {
+    if (taskPomodoroCount.value > (currEditTask.value.totalPomodoro ?? 0)) {
       currEditTask.value.totalPomodoro = taskPomodoroCount.value;
     }
     currEditTask.value.isOpen = false;
-    useTask.updateTask(currEditTask.value);
+    useTask.updateTask(currEditTask.value as Task);
     // reset statue
     showEditNotes.value = false;
     showEditPlans.value = false;
-    currEditTask.value = { id: '', title: '', totalPomodoro: 0 };
+    currEditTask.value = {};
     taskPomodoro.value = 0;
   }
 };

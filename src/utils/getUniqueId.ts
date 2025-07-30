@@ -1,15 +1,15 @@
 /* eslint-disable no-bitwise */
 export default function generateUniqueId(customString: string = ''): string {
-  let uid: string = '';
-  if (window.location.protocol === 'https:') {
-    return (uid = crypto.randomUUID());
+  // 優先使用 crypto.randomUUID()
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    const uuid = crypto.randomUUID();
+    return customString ? `${customString}${uuid}` : uuid;
   }
-  uid = 'xxxxxxxyxxxxxxxy';
-  if (customString) uid = customString + uid;
-  return (
-    uid.replace(/[xy]/g, (c) => {
-      const r = (Math.random() * 16) | 0;
-      return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
-    }) + Date.now().toString(36)
-  );
+  
+  // 降級方案
+  const timestamp = Date.now().toString(36);
+  const randomPart = Math.random().toString(36).substring(2, 15);
+  const uid = `${randomPart}${timestamp}`;
+  
+  return customString ? `${customString}${uid}` : uid;
 }

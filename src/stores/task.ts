@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import useIdxDB from '@/composable/useIdxDb';
 import useSettingsStore from './setting';
 import type { Task } from '../interface/task';
+import { handleError } from '@/utils/errorHandler';
 
 const useTaskStore = defineStore('taskStore', () => {
   const TaskList = ref<Task[]>([]);
@@ -15,7 +16,8 @@ const useTaskStore = defineStore('taskStore', () => {
       const request = await db.getAllData();
       TaskList.value = [...request];
     } catch (err) {
-      // console.log('something wrong!!');
+      // 使用統一的錯誤處理
+      handleError(err, 'TaskStore.initIdbData');
     }
   }
 
