@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import generateUniqueId from '@/composable/getUniqueId';
+import generateUniqueId from '@/utils/getUniqueId';
 import useIdxDB from '@/composable/useIdxDb';
 import type { Task } from '@/interface/task';
 import { onMounted, ref } from 'vue';

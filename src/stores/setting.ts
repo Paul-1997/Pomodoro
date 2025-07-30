@@ -1,6 +1,6 @@
 import { ref, watch } from 'vue';
 import { defineStore } from 'pinia';
-import { getCurrZone } from '@/composable/timeZone';
+import { getCurrZone } from '@/utils/timeZone';
 import type { SettingConfig } from '@/interface/settings';
 
 const defaultSettingConfig: SettingConfig = {

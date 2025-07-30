@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed inset-0 py-20 w-screen bg-transparent z-[100] flex items-center justify-center overflow-y-scroll overflow-x-hidden"
+    class="fixed inset-0 py-20 w-screen bg-black/40 z-[100] flex items-center justify-center overflow-y-scroll overflow-x-hidden"
     aria-hidden="true"
     role="dialog"
     @click.self="onPickingColor ? '' : closeModal"
@@ -318,15 +318,27 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watchEffect } from 'vue';
 import useSettingsStore from '@/stores/setting';
 import useAudio from '@/composable/useAudio';
 import { timezones, dateFormatType } from '@/assets/timeZone';
-import { formatZone } from '@/composable/timeZone';
+import { formatZone } from '@/utils/timeZone';
 import type { DialogProps } from '@/interface/dialog';
 import type { WorkStatus } from '@/interface/pomodoro';
 // init
 const useSetting = useSettingsStore();
+// 確保不會因為數值小於0或格式不正確引發計時器異常行為
+const validateValue = (v: any) => {
+  if (typeof v !== 'number' || v < 0) return 1;
+  return v;
+};
+watchEffect(() => {
+  useSetting.settingConfig.timer.pomodoroTime = validateValue(useSetting.settingConfig.timer.pomodoroTime);
+  useSetting.settingConfig.timer.shortBreak = validateValue(useSetting.settingConfig.timer.shortBreak);
+  useSetting.settingConfig.timer.longBreak = validateValue(useSetting.settingConfig.timer.longBreak);
+  useSetting.settingConfig.timer.longBreakInterval = validateValue(useSetting.settingConfig.timer.longBreakInterval);
+});
+
 // sound
 const audio = ref(null);
 const playAudio = (type: string) => {

@@ -12,7 +12,7 @@ importers:
         specifier: ^0.4.2
         version: 0.4.2(tailwindcss@3.4.4)
       dotenv:
-        specifier: ^16.3.1
+        specifier: ^16.4.5
         version: 16.4.5
       idb:
         specifier: ^8.0.0
@@ -24,10 +24,10 @@ importers:
         specifier: ^1.6.0
         version: 1.6.0(@types/node@20.14.10)(jsdom@24.1.0)
       vue:
-        specifier: ^3.4.29
+        specifier: ^3.4.31
         version: 3.4.31(typescript@5.4.5)
       vue-router:
-        specifier: ^4.3.3
+        specifier: ^4.4.0
         version: 4.4.0(vue@3.4.31(typescript@5.4.5))
     devDependencies:
       '@tsconfig/node20':
@@ -43,7 +43,7 @@ importers:
         specifier: ^7.16.0
         version: 7.16.0(@typescript-eslint/parser@7.16.0(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0)(typescript@5.4.5)
       '@typescript-eslint/parser':
-        specifier: ^7.0.0
+        specifier: ^7.16.0
         version: 7.16.0(eslint@8.57.0)(typescript@5.4.5)
       '@vitejs/plugin-vue':
         specifier: ^5.0.5
@@ -82,7 +82,7 @@ importers:
         specifier: ^16.6.2
         version: 16.6.2(eslint@8.57.0)
       eslint-plugin-vue:
-        specifier: ^9.23.0
+        specifier: ^9.27.0
         version: 9.27.0(eslint@8.57.0)
       gh-pages:
         specifier: ^6.1.1
@@ -91,7 +91,7 @@ importers:
         specifier: ^24.1.0
         version: 24.1.0
       npm-run-all2:
-        specifier: ^6.2.0
+        specifier: ^6.2.2
         version: 6.2.2
       postcss:
         specifier: ^8.4.39
@@ -103,13 +103,13 @@ importers:
         specifier: ^3.4.4
         version: 3.4.4
       typescript:
-        specifier: ~5.4.0
+        specifier: ~5.4.5
         version: 5.4.5
       vite:
-        specifier: ^5.3.1
+        specifier: ^5.3.3
         version: 5.3.3(@types/node@20.14.10)
       vue-tsc:
-        specifier: ^2.0.21
+        specifier: ^2.0.26
         version: 2.0.26(typescript@5.4.5)
 
 packages:
@@ -776,8 +776,8 @@ packages:
     resolution: {integrity: sha512-QOSvevhslijgYwRx6Rv7zKdMF8lbRmx+uQGx2+vDc+KI/eBnsy9kit5aj23AgGu3pa4t9AgwbnXWqS+iOY+2aA==}
     engines: {node: '>= 6'}
 
-  caniuse-lite@1.0.30001640:
-    resolution: {integrity: sha512-lA4VMpW0PSUrFnkmVuEKBUovSWKhj7puyCg8StBChgu298N1AtuF1sKWEvfDuimSEDbhlb/KqPKC3fs1HbuQUA==}
+  caniuse-lite@1.0.30001692:
+    resolution: {integrity: sha512-A95VKan0kdtrsnMubMKxEKUKImOPSuCpYgxSQBo036P5YYgVIcOYJEgt/txJWqObiRQeISNCfef9nvlQ0vbV7A==}
 
   chai@4.4.1:
     resolution: {integrity: sha512-13sOfMv2+DWduEU+/xbun3LScLoqN17nBeTLUsmDfKdoiC1fr0n9PU4guu4AhRcOVFk/sW8LyZWHuhWtQZiF+g==}
@@ -3009,7 +3009,7 @@ snapshots:
   autoprefixer@10.4.19(postcss@8.4.39):
     dependencies:
       browserslist: 4.23.1
-      caniuse-lite: 1.0.30001640
+      caniuse-lite: 1.0.30001692
       fraction.js: 4.3.7
       normalize-range: 0.1.2
       picocolors: 1.0.1
@@ -3041,7 +3041,7 @@ snapshots:
 
   browserslist@4.23.1:
     dependencies:
-      caniuse-lite: 1.0.30001640
+      caniuse-lite: 1.0.30001692
       electron-to-chromium: 1.4.820
       node-releases: 2.0.14
       update-browserslist-db: 1.1.0(browserslist@4.23.1)
@@ -3066,7 +3066,7 @@ snapshots:
 
   camelcase-css@2.0.1: {}
 
-  caniuse-lite@1.0.30001640: {}
+  caniuse-lite@1.0.30001692: {}
 
   chai@4.4.1:
     dependencies:
